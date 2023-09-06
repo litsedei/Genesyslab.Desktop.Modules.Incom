@@ -361,3 +361,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/MySample/IMySampleMenuView2.cs
+/MySample/IMySamplePresentationModel.cs
+/MySample/MySampleMenuView - Copy.xaml
