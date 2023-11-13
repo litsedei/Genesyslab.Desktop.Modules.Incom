@@ -1,26 +1,23 @@
 using Genesyslab.Desktop.Infrastructure.Commands;
 using Genesyslab.Desktop.Infrastructure.DependencyInjection;
 using Genesyslab.Desktop.Infrastructure.ViewManager;
-using Genesyslab.Desktop.Modules.Incom.CustomCommand;
-using Genesyslab.Desktop.Modules.Incom.DispositionCodeEx;
-using Genesyslab.Desktop.Modules.Incom.MySample;
-using Genesyslab.Desktop.Modules.Windows.Views.Interactions.CaseView.DispositionCodeView;
-//using Microsoft.Practices.Composite.Modularity;
+using Genesyslab.Desktop.Modules.Incom.UserEvenManagment;
+using Genesyslab.Desktop.Modules.Incom.IncomUI;
+using Genesyslab.Desktop.Modules.Incom;
+using Genesyslab.Desktop.Modules.Incom.IncomConfgReader;
 using Genesyslab.Desktop.Infrastructure;
 using Genesyslab.Desktop.Modules.Windows.Event;
-using System.Windows;
 using System;
 using Genesyslab.Desktop.Infrastructure.Configuration;
 using Genesyslab.Platform.Commons.Logging;
-using Genesyslab.Desktop.Modules.Incom.CrmConfgReader;
-using Genesyslab.Desktop.Modules.Gms.CallbackInvitation.CustomCommands;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Reflection;
+using Genesyslab.Desktop.Modules.Core.Configurations;
+using Genesyslab.Desktop.Modules.Incom.CustomCommands;
 
 namespace Genesyslab.Desktop.Modules.Incom
 {
-    /// <summary>
-    /// This class is a sample module which shows several ways of customization
-    /// </summary>
     public struct CommandActivatorData
     {
         public String name;
@@ -29,7 +26,6 @@ namespace Genesyslab.Desktop.Modules.Incom
         public Type type;
     }
 
-
     public class IncomModule : IModule
 	{
 		readonly IObjectContainer container;
@@ -37,112 +33,78 @@ namespace Genesyslab.Desktop.Modules.Incom
 		readonly ICommandManager commandManager;
 		readonly IViewEventManager viewEventManager;
         readonly IConfigManager configManager;
-        ILogger log;
-
+        private readonly ILogger log;
+       
         /// <summary>
-        /// Initializes a new instance of the <see cref="IncomModule"/> class.
-        /// </summary>
-        /// <param name="container">The container.</param>
-        /// <param name="viewManager">The view manager.</param>
-        /// <param name="commandManager">The command manager.</param>
-        public IncomModule(IObjectContainer container, IViewManager viewManager, ICommandManager commandManager, IViewEventManager viewEventManager)
+		/// Initializes a new instance of the <see cref="IncomModule"/> class.
+		/// </summary>
+		/// <param name="container">The container.</param>
+		/// <param name="viewManager">The view manager.</param>
+		/// <param name="commandManager">The command manager.</param>
+
+        public IncomModule(IObjectContainer container, IViewManager viewManager, ICommandManager commandManager, IViewEventManager viewEventManager, IConfigManager configManager)
 		{
 			this.container = container;
 			this.viewManager = viewManager;
 			this.commandManager = commandManager;
-			this.viewEventManager = viewEventManager;
-            this.log = container.Resolve<ILogger>();  // Initialize the trace system
-            this.log = log.CreateChildLogger("ExtensionSample");   // Create a child trace section
+		//	this.viewEventManager = viewEventManager;
+            log = container.Resolve<ILogger>();
             this.configManager = container.Resolve<IConfigManager>();
+           
+           
         }
 
-        /// <summary>
-        /// Initializes the module.
-        /// </summary>
         public void Initialize()
 		{
-            log.Info("Initialize()");
+            try
+            {
+            log.Info("IncomModule Initialize() start");
+            FileVersionInfo versionInfo = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
+            log.Info("IncomModule  file version : " + versionInfo.FileVersion);
+
             CfgReader config = new CfgReader(container);
-            //container.RegisterInstance<ICfgReader>(config);
-            //if (configManager.Task("InteractionWorkspace.omilia.canUse") == true)
-            //{
-            //    log.Debug("Omilia View is Enabled");
-            //    container.RegisterType<IMyOmiliaView, MyOmiliaView>();
-            //    log.Debug(String.Format("{0} container.RegisterType<IMyOmiliaView, MyOmiliaView>();", this.log));
-            //    container.RegisterType<IMyOmiliaViewModel, MyOmiliaViewModel>();
-            //    log.Debug(String.Format("{0} container.RegisterType<IMyOmiliaViewModel, MyOmiliaViewModel>();", this.log));
-            //    // Put the MySample view in the region "InteractionWorksheetRegion"
-            //    viewManager.ViewsByRegionName["InteractionWorksheetRegion"].Add(
-            //            new ViewActivator() { ViewType = typeof(IMyOmiliaView), ViewName = "MyInteractionSample", ActivateView = true });
-            //    // Here we register the view (GUI) "IMySampleButtonView"
-            //    container.RegisterType<IMyOmiliaButtonView, MyOmiliaButtonView>();
-            //    // Put the MySampleMenuView view in the region "CaseViewSideButtonRegion" (The case toggle button in the interaction windows)
-            //    viewManager.ViewsByRegionName["CaseViewSideButtonRegion"].Add(
-            //        new ViewActivator() { ViewType = typeof(IMyOmiliaButtonView), ViewName = "MySampleButtonView", ActivateView = true });
-            //}
+            container.RegisterInstance<ICfgReader>(config);
+                container.RegisterType<IIncomView, IncomView>();
+                container.RegisterType<IIncomViewModel, IncomViewModel>();
+                log.Info("IncomModule ActivateViewsWithRegions() start");
+                viewManager.ViewsByRegionName["InteractionVoiceCustomButtonRegion"].Add
+                        (new ViewActivator() { ViewType = typeof(IIncomView), ViewName = "IncomView", ActivateView = true });
+                log.Info("IncomModule ActivateViewsWithRegions() end");
 
+                UserEventListener userEventListener = new UserEventListener(container);
+                container.RegisterInstance<IUserEventListener>(userEventListener);
 
+                string host = config.IncomOptions.GetAsString("incom.voipsniffer_host");
 
-            ///////////////////////
-            // GUI customization case 1
-            // Replacing an already existing view "DispositionCodeView" in the Interaction Voice (not the behavior)
-
-            // Associate the existing "IDispositionCodeView" with the new "DispositionCodeExView" implementation
-            container.RegisterType<IDispositionCodeView, DispositionCodeExView>();
-
-
-			///////////////////////
-			// GUI customization case 2
-			// Add a view in the workspace in the main tool bar
-
-			// Here we register the view (GUI) "IMySampleView" and its behavior counterpart "IMySamplePresentationModel"
-			container.RegisterType<IMyExtensionSampleView, MySampleView>();
-			//container.RegisterType<IMyExtensionSampleViewModel, MySampleViewModel>();
-
-			//// Put the MySample view in the region "ToolbarWorkplaceRegion" (The TabControl in the main toolbar)
-			//viewManager.ViewsByRegionName["InteractionDetailsDispositionsRegion"].Insert(0,
-			//	new ViewActivator() { ViewType = typeof(IMyExtensionSampleView), ViewName = "MySample" });
-
-					// Here we register the view (GUI) "IMySampleMenuView"
-			//container.RegisterType<IMySampleMenuView, MySampleMenuView>();
-
-			// Put the MySampleMenuView view in the region "WorkspaceMenuRegion" (The Workspace toggle button in the main toolbar)
-		//	viewManager.ViewsByRegionName["WorkspaceMenuRegion"].Insert(0,
-		//		new ViewActivator() { ViewType = typeof(IMySampleMenuView), ViewName = "MySampleMenu", ActivateView = true });
-
-		//	viewManager.ViewsByRegionName["CustomBundlePartyRegion"].Insert(0,
-		//		new ViewActivator() { ViewType = typeof(IMySampleMenuView), ViewName = "MySampleMenu", ActivateView = true });
-
-		//	viewManager.ViewsByRegionName["InteractionVoiceCustomButtonRegion"].Insert(0,
-		//		new ViewActivator() { ViewType = typeof(IMySampleMenuView), ViewName = "MySampleMenu", ActivateView = true });
-
-
-			viewManager.ViewsByRegionName["CustomInfoOnInteractionsBundleRegion"].Insert(0,
-		new ViewActivator() { ViewType = typeof(IMyExtensionSampleView), ViewName = "MySample", ActivateView = true });
-
-
-		//	viewManager.ViewsByRegionName["InteractionDetailsDispositionsRegion"].Insert(0,
-		//new ViewActivator() { ViewType = typeof(IMySampleMenuView), ViewName = "MySampleMenu", ActivateView = true });
-
-
-
-
-
-			///////////////////////
-			// Command customization
-			// Add a command before the release call
-			//commandManager.CommandsByName["InteractionVoiceReleaseCall"].Insert(0,
-			//	new CommandActivator() { CommandType = typeof(BeforeReleaseCallCommand) });
-
-
-			///////////////////////
-			// Event registration
-			// Subscribe to the post login / post logout events
-			viewEventManager.Subscribe(MyEventHandler);
-            // Registering custom commands
+                    //if (configManager.Task("InteractionWorkspace.incom.canUse") == true)
+                    //{
+                    //    log.Debug("Incom View is enabled");
+                    //    container.RegisterType<IncomView, IncomView>();
+                    //    log.Debug(String.Format("{0} container.RegisterType<IIincomaView, IncomView>();", this.log));
+                    //    container.RegisterType<IIncomViewModel, IncomViewModel>();
+                    //    log.Debug(String.Format("{0} container.RegisterType<IIncomViewModel, IncomViewModel>();", this.log));
+                    //   // Put the Incom view in the region "InteractionWorksheetRegion"
+                    //    viewManager.ViewsByRegionName["InteractionWorksheetRegion"].Add(
+                    //            new ViewActivator() { ViewType = typeof(IIncomView), ViewName = "MyInteractionSample", ActivateView = true });
+                    // //   Here we register the view(GUI) "IMySampleButtonView"
+                    //    container.RegisterType<IIncomButtonView, IncomButtonView>();
+                    //   // Put the MySampleMenuView view in the region "CaseViewSideButtonRegion"(The case toggle button in the interaction windows)
+                    //    viewManager.ViewsByRegionName["CaseViewSideButtonRegion"].Add(
+                    //        new ViewActivator() { ViewType = typeof(IIncomButtonView), ViewName = "MySampleButtonView", ActivateView = true });
+                    //}
+                    ///////////////////////
+            RegisterCommands();
+            log.Info("IncomModule Initialize finished");
+            }
+            catch (Exception ex)
+            {
+                log.Error ("IncomModule Initialize error: "+ex.Message);
+            }
+        }
+        private void RegisterCommands()
+        {
+            log.Info("IncomModule RegisterCommands() start");
             List<CommandActivatorData> customCommandList = new List<CommandActivatorData>();
-            //   customCommandList.Add(new CommandActivatorData() { chain = "ApplicationClose", afterCommand = "IsPossibleToClose ", type = typeof(BeforeApplicationCloseCommand), name = "BeforeApplicationCloseCommand" });
-            //   customCommandList.Add(new CommandActivatorData() { chain = "ApplicationClose", afterCommand = "CloseApplicationCommand ", type = typeof(BeforeApplicationCloseCommand), name = "BeforeApplicationCloseCommand" });
             customCommandList.Add(new CommandActivatorData() { chain = "MediaVoiceLogOn", afterCommand = "LogOn ", type = typeof(AfterMediaVoiceLogOnCommand), name = "AfterMediaVoiceLogOnCommand" });
             foreach (CommandActivatorData thisCommand in customCommandList)
             {
@@ -151,26 +113,7 @@ namespace Genesyslab.Desktop.Modules.Incom
                 insertedList.Add(new CommandActivator() { CommandType = thisCommand.type, Name = thisCommand.name });
                 this.commandManager.InsertCommandToChainOfCommandAfter(thisCommand.chain, thisCommand.afterCommand, insertedList);
             }
+            log.Info("IncomModule RegisterCommands() end");
         }
-
-		void MyEventHandler(object eventObject)
-		{
-			string eventMessage = eventObject as string;
-			if (eventMessage != null)
-			{
-				MessageBox.Show("EventHandler " + eventMessage);
-				switch (eventMessage)
-				{
-					case "Loggin":
-						MessageBox.Show("Post logged in");
-						break;
-					case "Logout":
-						MessageBox.Show("Post logged out");
-						viewEventManager.Unsubscribe(MyEventHandler);
-						break;
-				}
-			}
-		}
-
-	}
+    }
 }

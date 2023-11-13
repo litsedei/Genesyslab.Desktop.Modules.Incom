@@ -10,12 +10,12 @@ using Genesyslab.Platform.Commons.Collections;
 using Genesyslab.Platform.Commons.Logging;
 using Genesyslab.Platform.Commons.Protocols;
 using Genesyslab.Platform.Configuration.Protocols.Types;
-using Genesyslab.Desktop.Modules.Incom.DispositionCodeEx;
+//using Genesyslab.Desktop.Modules.Incom.UserEvenManagment;
 //using System.Windows.Forms;
 using System.Reflection;
 
 
-namespace Genesyslab.Desktop.Modules.Incom.CrmConfgReader
+namespace Genesyslab.Desktop.Modules.Incom.IncomConfgReader
 {
     /// <summary>
     /// Public class which retrieves all custom configuration for the customization from Configuration Layer
@@ -23,52 +23,20 @@ namespace Genesyslab.Desktop.Modules.Incom.CrmConfgReader
     public class CfgReader : ICfgReader
     {
         private readonly IObjectContainer container = null;
-        private readonly IConfigManager config = null;
+        public readonly IConfigManager config = null;
         private readonly IConfigurationService configurationService = null;
         private readonly ILogger log = null;
-        public KeyValueCollection configOptions = new KeyValueCollection();    // Variables for storing option values
-        private string LOG_PREFIX = "#CRM_CustomConfig#";
-        //CRM  custom config
-        private string CFG_MAIN_PREFIX = "sdbo";
-        private string CFG_URI_CRM = "CRM_URI";
-        private string CFG_CRM_URI_TEST = "CRM_URI_TEST";
-        private string CFG_URI_CKC = "CRM_URI_CKC";
-        private string CFG_URI_CKC_OB = "CRM_URI_CKC_OB";
-        private string CFG_URI_CKC_CHAT = "CRM_URI_CKC_CHAT";
-        private string CFG_URI_CKC_CHAT_TEST = "CRM_URI_CKC_CHAT_TEST";
-        private string CFG_URI_CKC_EMAIL = "CRM_URI_CKC_EMAIL";
-        private string CFG_URI_CKC_EMAIL_TEST = "CRM_URI_CKC_EMAIL_TEST";
-        private string CFG_URI_CKC_TEST = "CRM_URI_CKC_TEST";
-        private string CFG_URI_CKC_OB_TEST = "CRM_URI_CKC_OB_TEST";
-        private string CFG_CRM_URI_KAZN = "CRM_URI_KAZN";
-        private string CFG_CRM_URI_KAZN_TEST = "CRM_URI_KAZN_TEST";
-        private string CFG_URI_SOCIAL_TEST = "CRM_URI_SOCIAL_TEST";
-        private string CFG_URI_SOCIAL = "CRM_URI_SOCIAL";
-        private string CFG_CRM_SOCIAL = "CRM_SOCIAL_ENABLED";
-        private string CFG_CRM_SOCIAL_TEST = "CRM_SOCIAL_ENABLED_TEST";
-        // APPS MC2
-        private string CFG_APPS_MC2_URI = "APPS_MC2_URI";
-        private string CFG_APPS_MC2_URILB = "APPS_MC2_URILB";
-        private string CFG_APPS_MC2_URI2 = "APPS_MC2_URI2";
-        private string CFG_APPS_MC2_TEST = "APPS_MC2_TEST";
-        //APPS CRM
-        private string CFG_APICRM_ENABLED = "APICRM_ENABLED";
-        private string CFG_APICRM_URI = "APICRM_URI";
-        private string CFG_APICRM_TOKEN = "APICRM_TOKEN";
-        private string CFG_APICRM_CHANNEL = "APICRM_CHANNEL";
+        public KeyValueCollection IncomOptions = new KeyValueCollection();    // Variables for storing IncomOptions values
+        private string LOG_PREFIX = "#Incom_CustomConfig#";
+        //Incom  custom config
+        private string CFG_MAIN_PREFIX = "incom";
 
-        private string CFG_APICRM_ENABLED_TEST = "APICRM_ENABLED_TEST";
-        private string CFG_APICRM_URI_TEST = "APICRM_URI_TEST";
-        private string CFG_APICRM_TOKEN_TEST = "APICRM_TOKEN_TEST";
-        private string CFG_APICRM_CHANNEL_TEST = "APICRM_CHANNEL_TEST";
-        //Omilia viiew custom config
-        private string CFG_OMILIA_TEST = "OMILIA_TEST";
-        private string CFG_OMILIA1 = "OMILIA1";
-        private string CFG_OMILIA2 = "OMILIA2";
-        private string CFG_SURVEY = "survey-dest";
-        private string CFG_OMILIA_VIEW = "omilia_view_enabled";
-        
-
+        //Incom view custom config
+        private string CFG_VOIPSNIFFER_HOST = "voipsniffer_host";
+    //    private string CFG_VOIPSNIFFER_PORT = "voipsniffer_PORT";
+        private string CFG_VOIPSNIFFER_TICK = "voipsniffer_TICK";
+        private string CFG_RED_SCORE = "red_score";
+        private string CFG_GREEN_SCORE = "green_score";
 
         public CfgReader(IObjectContainer container)
         {
@@ -118,16 +86,16 @@ namespace Genesyslab.Desktop.Modules.Incom.CrmConfgReader
                 configValue = (isValidValue) ? configValue : defaultValue;
             }
 
-            configOptions.Add(keyName, configValue);
+            IncomOptions.Add(keyName, configValue);
         }
         #endregion
         #region Public Methods for Exposing Configuration
         public string GetMainConfig(string keyName)
         {
             string fullKeyName = String.Format("{0}.{1}", CFG_MAIN_PREFIX, keyName);
-            if (configOptions.ContainsKey(fullKeyName))
+            if (IncomOptions.ContainsKey(fullKeyName))
             {
-                return configOptions.GetAsString(fullKeyName);
+                return IncomOptions.GetAsString(fullKeyName);
             }
             else
                 throw new Exception(String.Format("GetMainConfig: key [{0}] not found", fullKeyName));
@@ -142,47 +110,12 @@ namespace Genesyslab.Desktop.Modules.Incom.CrmConfgReader
             log.Info(String.Format("{0} Reading configuration from Configuration Layer...", LOG_PREFIX));
             try
             {
-                // Generic options: sdbo.* options (on IW options)
-             //   Singleton.Instance().ucsHost = configurationService.GetAvailableConnection(CfgAppType.CFGContactServer).ConnectionParameters[0].ServerInformation.Host.Name;
-             //   Singleton.Instance().ucsPort = int.Parse(configurationService.GetAvailableConnection(CfgAppType.CFGContactServer).ConnectionParameters[1].ServerInformation.Port);
-             //   Singleton.Instance().ucsHost_b = configurationService.GetAvailableConnection(CfgAppType.CFGContactServer).ConnectionParameters[1].ServerInformation.Host.Name;
-            //    Singleton.Instance().ucsPort_b = int.Parse(configurationService.GetAvailableConnection(CfgAppType.CFGContactServer).ConnectionParameters[1].ServerInformation.Port);
-                ReadIWOption(String.Format("{0}.{1}", CFG_MAIN_PREFIX, CFG_URI_CRM), "EmtyConfigString", ValidateString);
-                ReadIWOption(String.Format("{0}.{1}", CFG_MAIN_PREFIX, CFG_URI_CKC), "EmtyConfigString", ValidateString);
-                ReadIWOption(String.Format("{0}.{1}", CFG_MAIN_PREFIX, CFG_CRM_URI_KAZN), "EmtyConfigString", ValidateString);
-                ReadIWOption(String.Format("{0}.{1}", CFG_MAIN_PREFIX, CFG_APPS_MC2_URI), "EmtyConfigString", ValidateString);
-                ReadIWOption(String.Format("{0}.{1}", CFG_MAIN_PREFIX, CFG_APPS_MC2_URI2), "EmtyConfigString", ValidateString);
-                ReadIWOption(String.Format("{0}.{1}", CFG_MAIN_PREFIX, CFG_APPS_MC2_URILB), "EmtyConfigString", ValidateString);
-                ReadIWOption(String.Format("{0}.{1}", CFG_MAIN_PREFIX, CFG_OMILIA1), "EmtyConfigString", ValidateString);
-
-                ReadIWOption(String.Format("{0}.{1}", CFG_MAIN_PREFIX, CFG_APICRM_ENABLED), "false", ValidateString);
-                ReadIWOption(String.Format("{0}.{1}", CFG_MAIN_PREFIX, CFG_APICRM_URI), "EmtyConfigString", ValidateString);
-                ReadIWOption(String.Format("{0}.{1}", CFG_MAIN_PREFIX, CFG_APICRM_TOKEN), "EmtyConfigString", ValidateString);
-                ReadIWOption(String.Format("{0}.{1}", CFG_MAIN_PREFIX, CFG_APICRM_CHANNEL), "EmtyConfigString", ValidateString);
-
-                ReadIWOption(String.Format("{0}.{1}", CFG_MAIN_PREFIX, CFG_APICRM_ENABLED_TEST), "false", ValidateString);
-                ReadIWOption(String.Format("{0}.{1}", CFG_MAIN_PREFIX, CFG_APICRM_URI_TEST), "EmtyConfigString", ValidateString);
-                ReadIWOption(String.Format("{0}.{1}", CFG_MAIN_PREFIX, CFG_APICRM_TOKEN_TEST), "EmtyConfigString", ValidateString);
-                ReadIWOption(String.Format("{0}.{1}", CFG_MAIN_PREFIX, CFG_APICRM_CHANNEL_TEST), "EmtyConfigString", ValidateString);
-
-                ReadIWOption(String.Format("{0}.{1}", CFG_MAIN_PREFIX, CFG_OMILIA2), "EmtyConfigString", ValidateString);
-                ReadIWOption(String.Format("{0}.{1}", CFG_MAIN_PREFIX, CFG_URI_CKC_OB), "EmtyConfigString", ValidateString);
-                ReadIWOption(String.Format("{0}.{1}", CFG_MAIN_PREFIX, CFG_URI_CKC_CHAT), "EmtyConfigString", ValidateString);
-                ReadIWOption(String.Format("{0}.{1}", CFG_MAIN_PREFIX, CFG_URI_CKC_EMAIL), "EmtyConfigString", ValidateString);
-                ReadIWOption(String.Format("{0}.{1}", CFG_MAIN_PREFIX, CFG_URI_SOCIAL), "EmtyConfigString", ValidateString);
-                ReadIWOption(String.Format("{0}.{1}", CFG_MAIN_PREFIX, CFG_OMILIA_VIEW), "false", ValidateString);
-                ReadIWOption(String.Format("{0}.{1}", CFG_MAIN_PREFIX, CFG_SURVEY), "246318", ValidateString);
-                ReadIWOption(String.Format("{0}.{1}", CFG_MAIN_PREFIX, CFG_CRM_URI_TEST), "EmtyConfigString", ValidateString);
-                ReadIWOption(String.Format("{0}.{1}", CFG_MAIN_PREFIX, CFG_URI_CKC_TEST), "EmtyConfigString", ValidateString);
-                ReadIWOption(String.Format("{0}.{1}", CFG_MAIN_PREFIX, CFG_CRM_URI_KAZN_TEST), "EmtyConfigString", ValidateString);
-                ReadIWOption(String.Format("{0}.{1}", CFG_MAIN_PREFIX, CFG_APPS_MC2_TEST), "EmtyConfigString", ValidateString);
-                ReadIWOption(String.Format("{0}.{1}", CFG_MAIN_PREFIX, CFG_OMILIA_TEST), "EmtyConfigString", ValidateString);
-                ReadIWOption(String.Format("{0}.{1}", CFG_MAIN_PREFIX, CFG_URI_CKC_OB_TEST), "EmtyConfigString", ValidateString);
-                ReadIWOption(String.Format("{0}.{1}", CFG_MAIN_PREFIX, CFG_URI_CKC_CHAT_TEST), "EmtyConfigString", ValidateString);
-                ReadIWOption(String.Format("{0}.{1}", CFG_MAIN_PREFIX, CFG_URI_CKC_EMAIL_TEST), "EmtyConfigString", ValidateString);
-                ReadIWOption(String.Format("{0}.{1}", CFG_MAIN_PREFIX, CFG_URI_SOCIAL_TEST), "EmtyConfigString", ValidateString);
-                ReadIWOption(String.Format("{0}.{1}", CFG_MAIN_PREFIX, CFG_CRM_SOCIAL), "false", ValidateString);
-                ReadIWOption(String.Format("{0}.{1}", CFG_MAIN_PREFIX, CFG_CRM_SOCIAL_TEST), "false", ValidateString);
+                // Generic options: incom.* options (on IW options)
+                ReadIWOption(String.Format("{0}.{1}", CFG_MAIN_PREFIX, CFG_VOIPSNIFFER_HOST), "http://10.8.52.137:5000", ValidateString);
+               // ReadIWOption(String.Format("{0}.{1}", CFG_MAIN_PREFIX, CFG_VOIPSNIFFER_PORT), "8081", ValidateString);
+                ReadIWOption(String.Format("{0}.{1}", CFG_MAIN_PREFIX, CFG_GREEN_SCORE), "90", ValidateString);
+                ReadIWOption(String.Format("{0}.{1}", CFG_MAIN_PREFIX, CFG_RED_SCORE), "10", ValidateString);
+                ReadIWOption(String.Format("{0}.{1}", CFG_MAIN_PREFIX, CFG_VOIPSNIFFER_TICK), "4", ValidateString);
             }
             catch (Exception ex)
             {

@@ -1,53 +1,54 @@
-﻿// Copyright © 2017 Genesys. All Rights Reserved.
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Genesyslab.Desktop.Infrastructure.Commands;
 using Genesyslab.Desktop.Infrastructure.DependencyInjection;
-//using Genesyslab.Desktop.Modules.Gms.CallbackInvitation.Generic;
 using Genesyslab.Platform.Commons.Logging;
 using System.Windows;
 using System.Windows.Threading;
 using Genesyslab.Desktop.Modules.Core.Model.Agents;
 using Genesyslab.Enterprise.Model.Device;
-//using Genesyslab.Desktop.Modules.Gms.CallbackInvitation.CallbackInvitation;
 using System.Collections.ObjectModel;
 using Genesyslab.Desktop.Modules.Voice.Model.Agents;
-using Genesyslab.Desktop.Modules.Incom.CrmConfgReader;
+using Genesyslab.Desktop.Modules.Incom.IncomConfgReader;
 using Genesyslab.Platform.ApplicationBlocks.ConfigurationObjectModel.CfgObjects;
-using Genesyslab.Desktop.Modules.Incom.DispositionCodeEx;
+using Genesyslab.Desktop.Modules.Incom.UserEvenManagment;
 
-namespace Genesyslab.Desktop.Modules.Gms.CallbackInvitation.CustomCommands {
-    class AfterMediaVoiceLogOnCommand : IElementOfCommand {
+namespace Genesyslab.Desktop.Modules.Incom.CustomCommands
+{
+    class AfterMediaVoiceLogOnCommand : IElementOfCommand
+    {
         private readonly IObjectContainer container;
         private readonly ICfgReader config;
         private readonly ILogger log;
         private string _commandName = "AfterMediaVoiceLogOnCommand";
 
-        public AfterMediaVoiceLogOnCommand(IObjectContainer container) {
+        public AfterMediaVoiceLogOnCommand(IObjectContainer container)
+        {
             this.container = container;
             this.config = this.container.Resolve<ICfgReader>();
-
-
-            // Initialize the trace system
             this.log = this.container.Resolve<ILogger>().CreateChildLogger(this.Name);
         }
 
         #region IElementOfCommand Members
 
-        public string Name {
+        public string Name
+        {
             get { return this._commandName; }
             set { if (this._commandName != value) { this._commandName = value; } }
         }
 
-        public bool Execute(IDictionary<string, object> parameters, IProgressUpdater progress) {
+        public bool Execute(IDictionary<string, object> parameters, IProgressUpdater progress)
+        {
             // To go to the main thread
-            if (Application.Current.Dispatcher != null && !Application.Current.Dispatcher.CheckAccess()) {
+            if (Application.Current.Dispatcher != null && !Application.Current.Dispatcher.CheckAccess())
+            {
                 object result = Application.Current.Dispatcher.Invoke(DispatcherPriority.Send, new ExecuteDelegate(Execute), parameters, progress);
                 return (bool)result;
             }
-            else {
+            else
+            {
                 // Ok, we are in the main thread
                 this.log.Info(String.Format("{0} Starting custom {1} functionality", this.log, this.Name));
 
@@ -56,6 +57,7 @@ namespace Genesyslab.Desktop.Modules.Gms.CallbackInvitation.CustomCommands {
                 ObservableCollection<IMedia> agentMedias = agent.Place.ListOfMedia;
                 IMediaVoice mediaVoice = null;
                 String agentDN = "";
+               // String calluuid = "";
                 if (loginDNs.Count > 0)
                 {
                     agentDN = loginDNs[0].Substring(0, loginDNs[0].IndexOf('@'));
@@ -74,8 +76,9 @@ namespace Genesyslab.Desktop.Modules.Gms.CallbackInvitation.CustomCommands {
                         this.log.Info(String.Format("{0} current Media IsLogOff is {1} ", this.log, testMediaVoice.IsLogOff));
                         this.log.Info(String.Format("{0} current Media IsOutOfService is {1} ", this.log, testMediaVoice.IsOutOfService));
                         this.log.Info(String.Format("{0} register and listen to mediaVoice {1}", this.log, mediaVoice.Name));
-                        // try to register this listener for this DN, nly one time ?!
-                        if (! alreadyProcessedDNList.Contains(mediaVoice.SwitchName)) {
+                        // try to register this listener for this DN, only one time ?!
+                        if (!alreadyProcessedDNList.Contains(mediaVoice.SwitchName))
+                        {
                             // check that there is not already an instance in the container
                             IUserEventListener userEventListener = null;
                             foreach (var aUserEventListener in this.container.ResolveAll<IUserEventListener>())
@@ -86,7 +89,6 @@ namespace Genesyslab.Desktop.Modules.Gms.CallbackInvitation.CustomCommands {
                                     userEventListener = aUserEventListener;
                                 }
                             }
-
                             // if it does not exist, create it
                             if (userEventListener == null)
                             {
@@ -94,6 +96,7 @@ namespace Genesyslab.Desktop.Modules.Gms.CallbackInvitation.CustomCommands {
                                 userEventListener = new UserEventListener(this.container);
                                 userEventListener.AgentDN = agentDN;
                                 userEventListener.MediaVoice = mediaVoice;
+                               // userEventListener.callUuid = calluuid;
                                 userEventListener.SetupHandler();
                                 // we register the DN and add this listener instance into the container
                                 this.container.RegisterInstance<IUserEventListener>(mediaVoice.Name, userEventListener);
@@ -108,7 +111,7 @@ namespace Genesyslab.Desktop.Modules.Gms.CallbackInvitation.CustomCommands {
                                 // so activate it again
                                 userEventListener.AgentDN = agentDN;
                                 userEventListener.MediaVoice = mediaVoice;
-                                userEventListener.SetupHandler();
+                                //  userEventListener.SetupHandler();
                                 // add this switch as already processed ?! (not sure that this is the right way to do it)
                                 alreadyProcessedDNList.Add(mediaVoice.SwitchName);
                                 this.log.Info(String.Format("{0} final Media is {1} ", this.log, mediaVoice.Name));
@@ -122,15 +125,11 @@ namespace Genesyslab.Desktop.Modules.Gms.CallbackInvitation.CustomCommands {
                     }
                 }
                 this.log.Info(String.Format("{0} Finished custom {1} functionality", this.log, this.Name));
-
                 // Always allow remaining elements in the command chain to execute: set return value to false
                 return false;
             }
         }
 
-        /// <summary>
-        /// This delegate allows to go to the main thread.
-        /// </summary>
         delegate bool ExecuteDelegate(IDictionary<string, object> parameters, IProgressUpdater progressUpdater);
         #endregion
     }

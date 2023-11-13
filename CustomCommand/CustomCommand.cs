@@ -55,12 +55,9 @@ namespace Genesyslab.Desktop.Modules.Incom.CustomCommand
 			else
 			{
 				// Ok, we are in the main thread
-
 				log.Info("Execute");
-
 				// Get the parameter
 				IInteractionVoice interactionVoice = parameters["CommandParameter"] as IInteractionVoice;
-
 				// Prompt the alert dialog
 				return MessageBox.Show("Do you really want to release this call?\r\nThe call",
 					"Release the call?", MessageBoxButton.YesNo) == MessageBoxResult.No;

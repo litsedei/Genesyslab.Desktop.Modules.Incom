@@ -7,12 +7,12 @@ using System.Windows;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Genesyslab.Desktop.Modules.ExtensionSample")]
+[assembly: AssemblyTitle("Genesyslab.Desktop.Modules.Incom")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Alcatel")]
-[assembly: AssemblyProduct("Genesyslab.Desktop.Modules.ExtensionSample")]
-[assembly: AssemblyCopyright("Copyright © Alcatel 2009")]
+[assembly: AssemblyProduct("Genesyslab.Desktop.Modules.Incom")]
+[assembly: AssemblyCopyright("Copyright © Incom 2023")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -51,5 +51,5 @@ using System.Windows;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("8.5.156.03")]
-[assembly: AssemblyVersion("8.5.156.03")]
-[assembly: AssemblyFileVersion("8.5.156.03")]
+[assembly: AssemblyVersion("8.5.145.06")]
+[assembly: AssemblyFileVersion("0.1.0.01")]

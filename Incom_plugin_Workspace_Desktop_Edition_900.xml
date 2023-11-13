@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<metaData xmlns="http://genesyslab.com/mf/metadata"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://genesyslab.com/mf/metadata appmetadata.xsd">
+
+    <cfgApplication version="9.0.012.00" type="157" templateVersion="9.0.012.00">
+        <description>Configuration metadata for Incom WDE Plug-in</description>
+        <configuration>
+            <core>
+                <parameter name="name" displayName="Application Name">
+                    <format type="string" default="Interaction_Workspace_Incom_Plugin" />
+                </parameter>
+                <parameter name="host" displayName="Host">
+                    <format type="string" default="" />
+                </parameter>
+                <startInfo>
+                    <parameter name="workDirectory" displayName="">
+                        <format type="string" default="" />
+                    </parameter>
+                    <parameter name="commandLine" displayName="">
+                        <format type="string" default="" />
+                    </parameter>
+                    <parameter name="commandArgs" displayName="">
+                        <format type="string" default="" />
+                    </parameter>
+                    <parameter name="startupTimeout" displayName="">
+                        <format type="numeric" default=""> </format>
+                    </parameter>
+                    <parameter name="shutdownTimeout" displayName="">
+                        <format type="numeric" default=""> </format>
+                    </parameter>
+                    <parameter name="autoRestart" displayName="">
+                        <format type="boolean" default="true"> </format>
+                    </parameter>
+                </startInfo>
+                <portInfos>
+                    <port>
+                        <parameter name="connPort">
+                            <format type="numeric" default="" />
+                        </parameter>
+                        <parameter name="connId">
+                            <format type="string" default="default"> </format>
+                        </parameter>
+                        <parameter name="connProtocol">
+                            <format type="chooseOne" default="">
+                                <option value="none" />
+                            </format>
+                        </parameter>
+                        <parameter name="transportParam" displayName="">
+                            <format type="string" default="" />
+                        </parameter>
+                        <parameter name="appParam" displayName="">
+                            <format type="string" default="" />
+                        </parameter>
+                    </port>
+                </portInfos>
+                <connections></connections>
+            </core>
+            <options>
+                <section name="INCOM">
+                    <description>Incom plugin options</description>
+                    <parameter name="url" displayName="url" readOnly="false" hidden="false" enabled="true" mandatory="false">
+                        <description>
+                        HTTP(S) URL (e.g. http://[host]:[port]/). 
+                        </description>
+                        <valid-description>
+                        Valid HTTP(S) URL
+                        </valid-description>
+                        <effective-description>After Interaction Workspace restart.</effective-description>
+                        <value></value>
+                        <format type="string" default=""/>
+                        <validation>
+                            <rule regex="(^((http)|(https)):\/\/[^!*'();:@&amp;=+$,/?%#\[\]\s]*(:[0-9]+)?(\/[^!*'();:@&amp;=+$,?%#\[\]\s]+)*\/?$)|(^\s*$)" type="regex"/>
+                        </validation>
+                        <groupsRef>
+                            <group groupId="groupMain"/>
+                        </groupsRef>
+                    </parameter>
+                    <parameter name="getInfoPath" displayName="getInfoPath" readOnly="false" hidden="false" enabled="true" mandatory="false">
+                        <description>
+                          Plain text  Get Info path.
+                        </description>
+                        <valid-description>
+                          Any valid  string.
+                        </valid-description>
+                        <effective-description>After Interaction Workspace restart.</effective-description>
+                        <value></value>
+                        <format type="string" default="/api/v1/biometry/getinfo"/>
+                        <groupsRef>
+                            <group groupId="groupMain"/>
+                        </groupsRef>
+                    </parameter>
+					<parameter name="callPath" displayName="callPath" readOnly="false" hidden="false" enabled="true" mandatory="false">
+                        <description>
+                          Plain text  Call path.
+                        </description>
+                        <valid-description>
+                          Any valid  string.
+                        </valid-description>
+                        <effective-description>After Interaction Workspace restart.</effective-description>
+                        <value></value>
+                        <format type="string" default="/api/v1/biometry/call"/>
+                        <groupsRef>
+                            <group groupId="groupMain"/>
+                        </groupsRef>
+                    </parameter>
+					<parameter name="createPath" displayName="createPath" readOnly="false" hidden="false" enabled="true" mandatory="false">
+                        <description>
+                          Plain text  Create VP path.
+                        </description>
+                        <valid-description>
+                          Any valid  string.
+                        </valid-description>
+                        <effective-description>After Interaction Workspace restart.</effective-description>
+                        <value></value>
+                        <format type="string" default="/api/v1/biometry/voice/create"/>
+                        <groupsRef>
+                            <group groupId="groupMain"/>
+                        </groupsRef>
+                    </parameter>
+					<parameter name="verifyPath" displayName="verifyPath" readOnly="false" hidden="false" enabled="true" mandatory="false">
+                        <description>
+                          Plain text  Verify VP path.
+                        </description>
+                        <valid-description>
+                          Any valid  string.
+                        </valid-description>
+                        <effective-description>After Interaction Workspace restart.</effective-description>
+                        <value></value>
+                        <format type="string" default="/api/v1/biometry/voice/verify"/>
+                        <groupsRef>
+                            <group groupId="groupMain"/>
+                        </groupsRef>
+                    </parameter>
+					<parameter name="deletePath" displayName="verifyPath" readOnly="false" hidden="false" enabled="true" mandatory="false">
+                        <description>
+                          Plain text  Delete VP path.
+                        </description>
+                        <valid-description>
+                          Any valid  string.
+                        </valid-description>
+                        <effective-description>After Interaction Workspace restart.</effective-description>
+                        <value></value>
+                        <format type="string" default="/api/v1/biometry/voice/verify"/>
+                        <groupsRef>
+                            <group groupId="groupMain"/>
+                        </groupsRef>
+                    </parameter>
+                    <parameter name="minSpeechLenAuthentification" displayName="minSpeechLenAuthentification" readOnly="false" hidden="false" enabled="true" mandatory="false">
+                        <description>
+                            Limits min speech for authetification.
+                        </description>
+                        <valid-description><![CDATA[ Any positive number or 0 for no limits ]]>
+                        </valid-description>
+                        <effective-description></effective-description>
+                        <value></value>
+                        <format type="numeric" default="30"/>
+                        <groupsRef>
+                            <group groupId="groupMain"/>
+                        </groupsRef>
+                    </parameter>
+					<parameter name="minSpeechCreate" displayName="minSpeechCreate" readOnly="false" hidden="false" enabled="true" mandatory="false">
+                        <description>
+                            Limits min speech for create VP.
+                        </description>
+                        <valid-description><![CDATA[ Any positive number or 0 for no limits ]]>
+                        </valid-description>
+                        <effective-description></effective-description>
+                        <value></value>
+                        <format type="numeric" default="30"/>
+                        <groupsRef>
+                            <group groupId="groupMain"/>
+                        </groupsRef>
+                    </parameter>
+					<parameter name="waitVoiceQuailityCheck" displayName="waitVoiceQuailityCheck" readOnly="false" hidden="false" enabled="true" mandatory="false">
+                        <description>
+                              Limits period for registartion state.
+                        </description>
+                        <valid-description><![CDATA[ Any positive number or 0 for no limits ]]>
+                        </valid-description>
+                        <effective-description></effective-description>
+                        <value></value>
+                        <format type="numeric" default="4"/>
+                        <groupsRef>
+                            <group groupId="groupMain"/>
+                        </groupsRef>
+                    </parameter>
+					<parameter name="waitVoiceAuthentificationCheck" displayName="waitVoiceAuthentificationCheck" readOnly="false" hidden="false" enabled="true" mandatory="false">
+                        <description>
+                            Limits period for verification state
+                        </description>
+                        <valid-description><![CDATA[ Any positive number or 0 for no limits ]]>
+                        </valid-description>
+                        <effective-description></effective-description>
+                        <value></value>
+                        <format type="numeric" default="4"/>
+                        <groupsRef>
+                            <group groupId="groupMain"/>
+                        </groupsRef>
+                    </parameter>
+					<parameter name="startAutomaticAuthentification" displayName="startAutomaticAuthentification" readOnly="false" hidden="false" enabled="true" mandatory="false">
+                        <description>
+                            AutomaticAuthentification
+                        </description>
+                        <valid-description><![CDATA[<ul>
+                        <li>true - Automatic Authentification is enabled</li>
+                        <li>false - Automatic Authentification is disabled</li>
+                        </ul>]]> 
+                        </valid-description>
+                        <effective-description></effective-description>
+                        <value></value>
+                        <format type="boolean" default="false"/>
+                        <groupsRef>
+                            <group groupId="groupMain"/>
+                        </groupsRef>
+                    </parameter>
+					<parameter name="lowProb" displayName="lowProb" readOnly="false" hidden="false" enabled="true" mandatory="false">
+                        <description>
+                            lowProb
+                        </description>
+                        <valid-description><![CDATA[ Any positive number ]]>
+                        </valid-description>
+                        <effective-description></effective-description>
+                        <value></value>
+                        <format type="numeric" default="50"/>
+                        <groupsRef>
+                            <group groupId="groupMain"/>
+                        </groupsRef>
+                    </parameter>
+					<parameter name="highProb" displayName="highProb" readOnly="false" hidden="false" enabled="true" mandatory="false">
+                        <description>
+                            highProb
+                        </description>
+                        <valid-description><![CDATA[ Any positive number ]]>
+                        </valid-description>
+                        <effective-description></effective-description>
+                        <value></value>
+                        <format type="numeric" default="90"/>
+                        <groupsRef>
+                            <group groupId="groupMain"/>
+                        </groupsRef>
+                    </parameter>           
+          </section>  
+		  </options>
+            <tasks displayName="Interaction Workspace (Incom Plug-in)">
+                <description>Tasks of the Interaction Workspace Incom Plug-in</description>
+                <group name="IncomTasks" displayName="Interaction Workspace Incom Privileges">
+                    <description>Privileges related to the usage of Incom function set in Interaction Workspace</description>
+                    <task name="InteractionWorkspace.Incom.canUse" displayName="Agent - Can use Voicebiometry">
+                        <description>The agent is permitted to use functions of Incom. The other privileges of Incom cannot be configured if the value is Not Assigned</description>
+                    </task>
+                </group>
+				<group name="Omilia" displayName="Workspace Omilia Privileges">
+					<description>Privileges related to the Omilia View in Workspace</description>
+					<task name="InteractionWorkspace.omilia.canUse" displayName="omilia - Can Use omilia view">
+						<description>Allows access to Omilia View</description>
+					</task>
+					<task name="InteractionWorkspace.omiliaOutbound.canUse" displayName="omilia - Can Use omilia OutboundView">
+						<description>Allows access to Omilia OutboundView</description>
+					</task>
+				</group>
+			</tasks>
+            <userProperties />
+        </configuration>
+        <installation>
+            <step name="silentInstallation" displayName="" type="GenesysSilent" />
+        </installation>
+    </cfgApplication>
+</metaData>

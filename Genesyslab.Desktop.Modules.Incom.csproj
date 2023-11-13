@@ -54,6 +54,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Genesyslab.Desktop.Infrastructure, Version=8.0.1.6, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -75,7 +78,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\InteractionWorkspace\Genesyslab.Desktop.WPFCommon.dll</HintPath>
     </Reference>
-    <Reference Include="Genesyslab.Enterprise.Model, Version=8.5.156.2, Culture=neutral, PublicKeyToken=95e512acdb150ec7" />
+    <Reference Include="Genesyslab.Enterprise.Model, Version=8.5.145.4, Culture=neutral, PublicKeyToken=95e512acdb150ec7, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>\\priordfs.priorbank.by\vdiredirect\VorobevAA\Downloads\devtool\devtool\8.5.145.06\Bin\Genesyslab.Enterprise.Model.dll</HintPath>
+    </Reference>
     <Reference Include="Genesyslab.Platform.ApplicationBlocks.Commons.Protocols, Version=9.0.9.0, Culture=neutral, PublicKeyToken=2248646200015f60, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\InteractionWorkspace\Genesyslab.Platform.ApplicationBlocks.Commons.Protocols.dll</HintPath>
@@ -92,6 +98,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\InteractionWorkspace\Genesyslab.Platform.Commons.Collections.dll</HintPath>
     </Reference>
+    <Reference Include="Genesyslab.Platform.Commons.Connection, Version=9.0.6.5, Culture=neutral, PublicKeyToken=2248646200015f60, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\InteractionWorkspace\Genesyslab.Platform.Commons.Connection.dll</HintPath>
+    </Reference>
     <Reference Include="Genesyslab.Platform.Commons.Protocols, Version=9.0.9.0, Culture=neutral, PublicKeyToken=2248646200015f60, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\InteractionWorkspace\Genesyslab.Platform.Commons.Protocols.dll</HintPath>
@@ -103,6 +113,9 @@
     <Reference Include="Genesyslab.Platform.Voice.Protocols, Version=9.0.9.0, Culture=neutral, PublicKeyToken=2248646200015f60, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\InteractionWorkspace\Genesyslab.Platform.Voice.Protocols.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=7.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.Bcl.AsyncInterfaces.7.0.0\lib\net462\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Practices.Composite, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -116,10 +129,44 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\InteractionWorkspace\Microsoft.Practices.Unity.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>E:\HomeCreditKZ\WDE\InteractionWorkspace\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="RestSharp, Version=110.2.0.0, Culture=neutral, PublicKeyToken=598062e77f915f75, processorArchitecture=MSIL">
+      <HintPath>packages\RestSharp.110.2.0\lib\net471\RestSharp.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
+    </Reference>
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Memory, Version=4.0.1.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>packages\System.Memory.4.5.5\lib\net461\System.Memory.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>packages\System.Runtime.CompilerServices.Unsafe.6.0.0\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Text.Encodings.Web, Version=7.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>packages\System.Text.Encodings.Web.7.0.0\lib\net462\System.Text.Encodings.Web.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Text.Json, Version=7.0.0.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>packages\System.Text.Json.7.0.2\lib\net462\System.Text.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
@@ -147,20 +194,31 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BiometryMethods.cs" />
+    <Compile Include="BiometryTimer.cs" />
+    <Compile Include="BussinessInfo.cs" />
+    <Compile Include="CustomCommand\AfterMediaVoiceLogOnCommand.cs" />
+    <Compile Include="GetInfoResponseJson.cs" />
     <Compile Include="IncomCfgReader\CfgReader.cs" />
     <Compile Include="IncomCfgReader\ICfgReader.cs" />
-    <Compile Include="CustomCommand\AfterMediaVoiceLogOnCommand.cs" />
-    <Compile Include="CustomCommand\CustomCommand.cs" />
-    <Compile Include="DispositionCodeEx\DispositionCodeExView.xaml.cs">
-      <DependentUpon>DispositionCodeExView.xaml</DependentUpon>
+    <Compile Include="Incom\IIncomPresentationModel.cs" />
+    <Compile Include="Incom\IIncomView.cs" />
+    <Compile Include="Incom\IncomPresentationModel.cs" />
+    <Compile Include="Incom\IncomView.xaml.cs">
+      <DependentUpon>IncomView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="MySample\IMySampleMenuView2.cs" />
-    <Compile Include="MySample\IMySampleMenuView.cs" />
-    <Compile Include="MySample\IMySamplePresentationModel.cs" />
-    <Compile Include="MySample\IMySampleView.cs" />
-    <Compile Include="MySample\MySampleView.xaml.cs">
-      <DependentUpon>MySampleView.xaml</DependentUpon>
-    </Compile>
+    <Compile Include="JsonDeserializing\BussinessInfoResponse.cs" />
+    <Compile Include="JsonDeserializing\CallResponseJsonResp.cs" />
+    <Compile Include="JsonDeserializing\CreateResponseJson.cs" />
+    <Compile Include="JsonDeserializing\DeleteResponseJson.cs" />
+    <Compile Include="JsonDeserializing\ErrorInfoResponse.cs" />
+    <Compile Include="JsonDeserializing\GetInfoResponseJson.cs" />
+    <Compile Include="JsonDeserializing\VerifyResponseJson.cs" />
+    <Compile Include="JsonSerializing\CallReq.cs" />
+    <Compile Include="JsonSerializing\CreateReq.cs" />
+    <Compile Include="JsonSerializing\DeleteReq.cs" />
+    <Compile Include="JsonSerializing\GetInfoReq.cs" />
+    <Compile Include="JsonSerializing\VerifyReq.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -175,15 +233,18 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="IncomModule.cs" />
+    <Compile Include="Settings.cs" />
     <Compile Include="UserEventManagement\IUserEventListener.cs" />
     <Compile Include="UserEventManagement\UserEventListener.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="app.config" />
     <None Include="Genesyslab.Desktop.Modules.Incom.module-config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -191,15 +252,7 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="DispositionCodeEx\DispositionCodeExView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="MySample\MySampleView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
+    <Page Include="Incom\IncomView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
