@@ -56,7 +56,7 @@ namespace Genesyslab.Desktop.Modules.Incom.IncomUI
             catch (Exception ex)
             {
               //  MessageBox.Show(ex.Message);
-                log.Error(ex.InnerException);
+                log.Error("Incom: "+ex.InnerException);
             }
         }
 
@@ -68,12 +68,13 @@ namespace Genesyslab.Desktop.Modules.Incom.IncomUI
                 callReq.requestType = "QUALITY";
                 callReq.callUUID = callUUID;
                 callReq.channelType = "IN";
+                callReq.callToken = callToken;
                 string bodyCall = JsonConvert.SerializeObject(callReq);
                 //string bodyCall = JsonSerializer.Serialize(callReq);
                 var callResponse = biometry_call_exec(bodyCall);
                 speechLen = Convert.ToInt32(Math.Round(Convert.ToDouble(callResponse.businessInfo.speechLen.ToString())));
                 len = Convert.ToInt32(Math.Round(Convert.ToDouble(callResponse.businessInfo.len.ToString())));
-                callToken = callResponse.businessInfo.callToken.ToString();
+                
                 lbl_bio_status.Text = callResponse.errorInfo.description.ToString();
                 if (speechLen >= minSpeechLenCreate)
                 {
@@ -85,7 +86,7 @@ namespace Genesyslab.Desktop.Modules.Incom.IncomUI
             catch (Exception ex)
             {
                // MessageBox.Show(ex.Message);
-                log.Error(ex.InnerException);
+                log.Error("Incom: "+ex.InnerException);
             }
         }
 

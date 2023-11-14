@@ -17,8 +17,8 @@ namespace Genesyslab.Desktop.Modules.Incom.IncomUI
         private RestResponse PostBiometryJson(string path, object body)
         {
             RestResponse response = new RestResponse();
-           // RestClient client = new RestClient(cfgReader.GetMainConfig("voipsniffer_host"));
-            RestClient client = new RestClient("http://127.0.0.1:8080");
+            RestClient client = new RestClient(cfgReader.GetMainConfig("voipsniffer_host"));
+           // RestClient client = new RestClient("http://127.0.0.1:8080");
             
             //todo
 
@@ -26,14 +26,14 @@ namespace Genesyslab.Desktop.Modules.Incom.IncomUI
             try
 
             {
-                log.Info("Biometry request. Host: " +client.Options.BaseUrl+" path: "+path+" body: " +body.ToString());
+                log.Info("Incom. Biometry request. Host: " +client.Options.BaseUrl+" path: "+path+" body: " +body.ToString());
                 RestRequest request = new RestRequest(path, Method.Post);
                 request.Method = Method.Post;
                 request.Timeout = 1000;
                 request.AddHeader("Accept", "application/json");
                 request.AddParameter("application/json", body, ParameterType.RequestBody);
                 response = client.Post(request);
-                log.Info("Biometry response: " + response.Content.ToString() + " Response code: " + response.StatusCode.ToString());
+                log.Info("Incom: Biometry response: " + response.Content.ToString() + " Response code: " + response.StatusCode.ToString());
             }
             catch (Exception ex)
             {
@@ -173,7 +173,7 @@ namespace Genesyslab.Desktop.Modules.Incom.IncomUI
             }
             catch (Exception ex)
             {
-                log.Error(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.ToString() + ex.InnerException);
+                log.Error("Incom: "+System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.ToString() + ex.InnerException);
             }
         }
         private void btn_bioDelete_click(object sender, RoutedEventArgs e)
@@ -208,7 +208,7 @@ namespace Genesyslab.Desktop.Modules.Incom.IncomUI
             }
             catch (Exception ex)
             {
-                log.Error(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.ToString() + ex.InnerException);
+                log.Error("Incom: " + System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.ToString() + ex.InnerException);
             }
         }
 
@@ -248,13 +248,14 @@ namespace Genesyslab.Desktop.Modules.Incom.IncomUI
         }
         private void CreateVB(DispatcherTimer timer)
         {
-            CallReq callReqQ = new CallReq();
-            callReqQ.requestType = "RECORD";
-            callReqQ.callUUID = callUUID;
-            callReqQ.channelType = channelType;
-           // string bodyCallQ = JsonSerializer.Serialize(callReqQ);
-            string bodyCallQ = JsonConvert.SerializeObject(callReqQ);
-            var callReponseQ = biometry_call_exec(bodyCallQ);
+            CallReqRecord callReqR = new CallReqRecord();
+            callReqR.requestType = "RECORD";
+            callReqR.callUUID = callUUID;
+            callReqR.channelType = channelType;
+            callReqR.phoneNumber= phoneNumber;
+           // string bodyCallR = JsonSerializer.Serialize(callReqR);
+            string bodyCallR = JsonConvert.SerializeObject(callReqR);
+            var callReponseQ = biometry_call_exec(bodyCallR);
             lbl_bio_status.Text = callReponseQ.errorInfo.description.ToString();
             timer.Interval = TimeSpan.FromSeconds(waitVoiceQualityCheck);
             timer.Tick += timer_tick_create;

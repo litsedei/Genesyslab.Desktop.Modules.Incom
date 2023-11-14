@@ -215,6 +215,7 @@
     <Compile Include="JsonDeserializing\GetInfoResponseJson.cs" />
     <Compile Include="JsonDeserializing\VerifyResponseJson.cs" />
     <Compile Include="JsonSerializing\CallReq.cs" />
+    <Compile Include="JsonSerializing\CallReqRecord.cs" />
     <Compile Include="JsonSerializing\CreateReq.cs" />
     <Compile Include="JsonSerializing\DeleteReq.cs" />
     <Compile Include="JsonSerializing\GetInfoReq.cs" />

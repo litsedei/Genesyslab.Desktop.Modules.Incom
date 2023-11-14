@@ -58,18 +58,18 @@ namespace Genesyslab.Desktop.Modules.Incom
 		{
             try
             {
-            log.Info("IncomModule Initialize() start");
+            log.Info("Incom: IncomModule Initialize start");
             FileVersionInfo versionInfo = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
-            log.Info("IncomModule  file version : " + versionInfo.FileVersion);
+            log.Info("Incom: IncomModule  file version : " + versionInfo.FileVersion);
 
             CfgReader config = new CfgReader(container);
             container.RegisterInstance<ICfgReader>(config);
                 container.RegisterType<IIncomView, IncomView>();
                 container.RegisterType<IIncomViewModel, IncomViewModel>();
-                log.Info("IncomModule ActivateViewsWithRegions() start");
+                log.Info("Incom: IncomModule ActivateViewsWithRegions() start");
                 viewManager.ViewsByRegionName["InteractionVoiceCustomButtonRegion"].Add
                         (new ViewActivator() { ViewType = typeof(IIncomView), ViewName = "IncomView", ActivateView = true });
-                log.Info("IncomModule ActivateViewsWithRegions() end");
+                log.Info("Incom: IncomModule ActivateViewsWithRegions() end");
 
                 UserEventListener userEventListener = new UserEventListener(container);
                 container.RegisterInstance<IUserEventListener>(userEventListener);
@@ -94,16 +94,16 @@ namespace Genesyslab.Desktop.Modules.Incom
                     //}
                     ///////////////////////
             RegisterCommands();
-            log.Info("IncomModule Initialize finished");
+            log.Info("Incom: IncomModule Initialize finished");
             }
             catch (Exception ex)
             {
-                log.Error ("IncomModule Initialize error: "+ex.Message);
+                log.Error ("Incom: IncomModule Initialize error: " + ex.Message);
             }
         }
         private void RegisterCommands()
         {
-            log.Info("IncomModule RegisterCommands() start");
+            log.Info("Incom: IncomModule RegisterCommands() start");
             List<CommandActivatorData> customCommandList = new List<CommandActivatorData>();
             customCommandList.Add(new CommandActivatorData() { chain = "MediaVoiceLogOn", afterCommand = "LogOn ", type = typeof(AfterMediaVoiceLogOnCommand), name = "AfterMediaVoiceLogOnCommand" });
             foreach (CommandActivatorData thisCommand in customCommandList)
@@ -113,7 +113,7 @@ namespace Genesyslab.Desktop.Modules.Incom
                 insertedList.Add(new CommandActivator() { CommandType = thisCommand.type, Name = thisCommand.name });
                 this.commandManager.InsertCommandToChainOfCommandAfter(thisCommand.chain, thisCommand.afterCommand, insertedList);
             }
-            log.Info("IncomModule RegisterCommands() end");
+            log.Info("Incom: IncomModule RegisterCommands() end");
         }
     }
 }
