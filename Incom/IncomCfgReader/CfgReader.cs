@@ -33,18 +33,18 @@ namespace Genesyslab.Desktop.Modules.Incom.IncomConfgReader
 
         //Incom view custom config
         private string CFG_VOIPSNIFFER_HOST = "voipsniffer_host";
-        private string CFG_VOIPSNIFFER_TICK = "voipsniffer_tick";  // FOR CHANGE
+        private string CFG_VOIPSNIFFER_TIMEOUT = "voipsniffer_timeout";
 
 
-        private string CFG_LOWPROB = "LOWPROB";
-        private string CFG_HIGHPROB = "HIGHPROB";
+        private string CFG_LOWPROB = "lowprob";
+        private string CFG_HIGHPROB = "highprob";
         private string CFG_GETINFO_PATH = "getinfo_path";
         private string CFG_VERIFY_PATH = "verify_path";
         private string CFG_CREATE_PATH = "create_path";
         private string CFG_DELETE_PATH = "delete_path";
         private string CFG_CALL_PATH = "call_path";
-        private string CFG_MIN_SPEECH_LEN_AUTHENTIFICATION = "minSpeechLenAuthentification";
-        private string CFG_MIN_SPEECH_LEN_CREATE = "minSpeechLenCreate";
+        private string CFG_MIN_SPEECHLEN_AUTHENTIFICATION = "minSpeechLenAuthentification";
+        private string CFG_MIN_SPEECHLEN_CREATE = "minSpeechLenCreate";
         private string CFG_WAIT_VOICE_QUALITY_CHECK= "waitVoiceQualityCheck";
         private string CFG_WAIT_AUTHENTIFICATION_CHECK = "waitAuthentificationCheck";
         private string CFG_AUTOMATIC_AITHENTIFICATION = "startAutomaticAuthentication";
@@ -125,15 +125,15 @@ namespace Genesyslab.Desktop.Modules.Incom.IncomConfgReader
                 ReadIWOption(String.Format("{0}.{1}", CFG_MAIN_PREFIX, CFG_VOIPSNIFFER_HOST), "http://10.8.52.137:5000", ValidateString);
                 ReadIWOption(String.Format("{0}.{1}", CFG_MAIN_PREFIX, CFG_HIGHPROB), "90", ValidateString);
                 ReadIWOption(String.Format("{0}.{1}", CFG_MAIN_PREFIX, CFG_LOWPROB), "50", ValidateString);
-                ReadIWOption(String.Format("{0}.{1}", CFG_MAIN_PREFIX, CFG_VOIPSNIFFER_TICK), "4", ValidateString);
+                ReadIWOption(String.Format("{0}.{1}", CFG_MAIN_PREFIX, CFG_VOIPSNIFFER_TIMEOUT), "1000", ValidateString);
                 ReadIWOption(String.Format("{0}.{1}", CFG_MAIN_PREFIX, CFG_GETINFO_PATH), "/getinfo", ValidateString);
                 ReadIWOption(String.Format("{0}.{1}", CFG_MAIN_PREFIX, CFG_VERIFY_PATH), "/verify", ValidateString);
                 ReadIWOption(String.Format("{0}.{1}", CFG_MAIN_PREFIX, CFG_CREATE_PATH), "/create", ValidateString);
                 ReadIWOption(String.Format("{0}.{1}", CFG_MAIN_PREFIX, CFG_DELETE_PATH), "/delete", ValidateString);
                 ReadIWOption(String.Format("{0}.{1}", CFG_MAIN_PREFIX, CFG_CALL_PATH),"/call", ValidateString);
 
-                ReadIWOption(String.Format("{0}.{1}", CFG_MAIN_PREFIX, CFG_MIN_SPEECH_LEN_AUTHENTIFICATION), "30", ValidateString);
-                ReadIWOption(String.Format("{0}.{1}", CFG_MAIN_PREFIX, CFG_MIN_SPEECH_LEN_CREATE), "30", ValidateString);
+                ReadIWOption(String.Format("{0}.{1}", CFG_MAIN_PREFIX, CFG_MIN_SPEECHLEN_AUTHENTIFICATION), "20", ValidateString);
+                ReadIWOption(String.Format("{0}.{1}", CFG_MAIN_PREFIX, CFG_MIN_SPEECHLEN_CREATE), "20", ValidateString);
                 ReadIWOption(String.Format("{0}.{1}", CFG_MAIN_PREFIX, CFG_WAIT_VOICE_QUALITY_CHECK), "4", ValidateString);
                 ReadIWOption(String.Format("{0}.{1}", CFG_MAIN_PREFIX, CFG_WAIT_AUTHENTIFICATION_CHECK), "4", ValidateString);
                 ReadIWOption(String.Format("{0}.{1}", CFG_MAIN_PREFIX, CFG_AUTOMATIC_AITHENTIFICATION), "1", ValidateString);

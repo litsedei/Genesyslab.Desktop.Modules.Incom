@@ -23,8 +23,11 @@ namespace Genesyslab.Desktop.Modules.Incom.IncomUI
         {
             try
             {
+                int minSpeechLenAuthentification = Convert.ToInt32(cfgReader.GetMainConfig("minSpeechLenAuthentification"));
                 var callResponse = biometry_call_exec("QUALITY", callUUID,channelType,phoneNumber,callToken);
                 int bioScore = 0;
+                int speechLen = 0;
+                int len = 0;
                 speechLen = Convert.ToInt32(Math.Round(Convert.ToDouble(callResponse.businessInfo.speechLen.ToString())));
                 len = Convert.ToInt32(Math.Round(Convert.ToDouble(callResponse.businessInfo.len.ToString())));
                 callToken = callResponse.businessInfo.callToken.ToString();
@@ -44,8 +47,11 @@ namespace Genesyslab.Desktop.Modules.Incom.IncomUI
         }
         private void timer_tick_create(object sender, EventArgs e)
         {
+            int minSpeechLenCreate= Convert.ToInt32(cfgReader.GetMainConfig("minSpeechLenCreate"));
             try
             {
+                int len = 0;
+                int speechLen = 0;
                 var callResponse = biometry_call_exec("QUALITY", callUUID,channelType,phoneNumber,callToken);
                 speechLen = Convert.ToInt32(Math.Round(Convert.ToDouble(callResponse.businessInfo.speechLen.ToString())));
                 len = Convert.ToInt32(Math.Round(Convert.ToDouble(callResponse.businessInfo.len.ToString())));
@@ -65,6 +71,8 @@ namespace Genesyslab.Desktop.Modules.Incom.IncomUI
         }
         private void vb_illuminator(int bioScore)
         {
+           int lowProb = Convert.ToInt32(cfgReader.GetMainConfig("lowprob"));
+            int highProb = Convert.ToInt32(cfgReader.GetMainConfig("highprob"));
             switch (bioScore)
             {
                 case int n when (n < lowProb):

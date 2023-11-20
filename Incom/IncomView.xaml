@@ -60,7 +60,7 @@
         </Grid>
         <StackPanel Grid.Row="1" Grid.Column="1" x:Name="voice_stackPanel" Orientation="Horizontal" Visibility="Visible" UseLayoutRounding="False">
             <Button Style="{DynamicResource RoundCorner}" x:Name="btn_bio_create" Width="75" Content="Создать" Height="20" Click="btn_bioCreate_click" IsEnabled="False"  />
-            <Button Style="{DynamicResource RoundCorner}" x:Name="btn_bio_virefy" Width="75" Content="Проверить" Height="20" Margin="10,0,10,0"  Click="btn_bioVerify_click" IsEnabled="False"/>
+            <Button Style="{DynamicResource RoundCorner}" x:Name="btn_bio_verify" Width="75" Content="Проверить" Height="20" Margin="10,0,10,0"  Click="btn_bioVerify_click" IsEnabled="False"/>
             <Button Style="{DynamicResource RoundCorner}" x:Name="btn_bio_delete" Width="75" Content="Удалить" Height="20" Margin="0,0,10,0"  Click="btn_bioDelete_click" IsEnabled="False"/>
         </StackPanel>
     </Grid>
