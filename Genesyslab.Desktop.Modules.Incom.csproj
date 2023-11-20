@@ -196,30 +196,29 @@
   <ItemGroup>
     <Compile Include="BiometryMethods.cs" />
     <Compile Include="BiometryTimer.cs" />
-    <Compile Include="BussinessInfo.cs" />
-    <Compile Include="CustomCommand\AfterMediaVoiceLogOnCommand.cs" />
-    <Compile Include="GetInfoResponseJson.cs" />
-    <Compile Include="IncomCfgReader\CfgReader.cs" />
-    <Compile Include="IncomCfgReader\ICfgReader.cs" />
+    <Compile Include="Incom\JsonDeserializing\BusinessInfo.cs" />
+    <Compile Include="Incom\CustomCommand\AfterMediaVoiceLogOnCommand.cs" />
+    <Compile Include="Incom\IncomCfgReader\CfgReader.cs" />
+    <Compile Include="Incom\IncomCfgReader\ICfgReader.cs" />
     <Compile Include="Incom\IIncomPresentationModel.cs" />
     <Compile Include="Incom\IIncomView.cs" />
     <Compile Include="Incom\IncomPresentationModel.cs" />
     <Compile Include="Incom\IncomView.xaml.cs">
       <DependentUpon>IncomView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="JsonDeserializing\BussinessInfoResponse.cs" />
-    <Compile Include="JsonDeserializing\CallResponseJsonResp.cs" />
-    <Compile Include="JsonDeserializing\CreateResponseJson.cs" />
-    <Compile Include="JsonDeserializing\DeleteResponseJson.cs" />
-    <Compile Include="JsonDeserializing\ErrorInfoResponse.cs" />
-    <Compile Include="JsonDeserializing\GetInfoResponseJson.cs" />
-    <Compile Include="JsonDeserializing\VerifyResponseJson.cs" />
-    <Compile Include="JsonSerializing\CallReq.cs" />
-    <Compile Include="JsonSerializing\CallReqRecord.cs" />
-    <Compile Include="JsonSerializing\CreateReq.cs" />
-    <Compile Include="JsonSerializing\DeleteReq.cs" />
-    <Compile Include="JsonSerializing\GetInfoReq.cs" />
-    <Compile Include="JsonSerializing\VerifyReq.cs" />
+    <Compile Include="Incom\JsonDeserializing\BusinessInfoResponse.cs" />
+    <Compile Include="Incom\JsonDeserializing\CallResponseJsonResp.cs" />
+    <Compile Include="Incom\JsonDeserializing\CreateResponseJson.cs" />
+    <Compile Include="Incom\JsonDeserializing\DeleteResponseJson.cs" />
+    <Compile Include="Incom\JsonDeserializing\ErrorInfoResponse.cs" />
+    <Compile Include="Incom\JsonDeserializing\GetInfoResponseJson.cs" />
+    <Compile Include="Incom\JsonDeserializing\VerifyResponseJson.cs" />
+    <Compile Include="Incom\JsonSerializing\CallReq.cs" />
+    <Compile Include="Incom\JsonSerializing\CallReqRecord.cs" />
+    <Compile Include="Incom\JsonSerializing\CreateReq.cs" />
+    <Compile Include="Incom\JsonSerializing\DeleteReq.cs" />
+    <Compile Include="Incom\JsonSerializing\GetInfoReq.cs" />
+    <Compile Include="Incom\JsonSerializing\VerifyReq.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -235,8 +234,8 @@
     </Compile>
     <Compile Include="IncomModule.cs" />
     <Compile Include="Settings.cs" />
-    <Compile Include="UserEventManagement\IUserEventListener.cs" />
-    <Compile Include="UserEventManagement\UserEventListener.cs" />
+    <Compile Include="Incom\UserEventManagement\IUserEventListener.cs" />
+    <Compile Include="Incom\UserEventManagement\UserEventListener.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

@@ -46,38 +46,23 @@ namespace Genesyslab.Desktop.Modules.Incom.IncomUI
 		public DispatcherTimer timer = new DispatcherTimer();
 		int tick = 4;
 
-
-        //private static readonly string getInfoPath = "/api/v1/biometry/getInfo";
-        //private static readonly string verifypath = "/api/v1/biometry/voice/verify";
-        //private static readonly string createPath = "/api/v1/biometry/voice/create";
-        //private static readonly string deletePath = "/api/v1/biometry/voice/delete";
-        //private static readonly string callPath = "/api/v1/biometry/call";
-
-
-        private static readonly string getInfoPath = "/getinfo";
-        private static readonly string verifypath = "/verify";
-        private static readonly string createPath = "/create";
-        private static readonly string deletePath = "/delete";
-        private static readonly string callPath = "/call";
-
         //incom  config wde
         int minSpeechLenCreate = 24;
         int minSpeechLenAuthentification = 20;
-        int waitVoiceQualityCheck = 4;
-        int waitAuthentificationCheck = 4;
-        int lowProb = 30;
-        int highProb = 50;
+        int lowProb = 30; //Convert.ToInt32(cfgReader.GetMainConfig("waitAuthentificationCheck"));
+        int highProb = 90;//Convert.ToInt32(cfgReader.GetMainConfig("waitAuthentificationCheck"));
         bool startAutomaticAuthentication = true;
         bool agentCanAuthVP = true;  //wde role
         bool agentCanCreateVP = true; //wde role
         bool agentCanDeleteVP = true;  //wde role 
         string channelType = "IN"; //callType
-        bool vbioRecordingAllowed = true; //UserData
+        int vbioRecordingAllowed = 1; //UserData
         string agentId = "agentId";
         string phoneNumber = "99011234567"; //getinfo response
         string cuid = "9986537";            //getinfo response
         public string callUUID = "998U87J5FGADL3QTR0F0U2LAES00RGLF";
         public string callToken = "99ae82e9-9cf8-467a-b900-a0a344db3d36"; //verify response errorinfo
+        public bool isRecordingStarted = false;
         double len = 24.00275; //verify response errorinfo
         double speechLen = 24.0; //verify response errorinfo
         double prob = 95.989999; //verify response bussinessinfo
@@ -290,11 +275,16 @@ namespace Genesyslab.Desktop.Modules.Incom.IncomUI
                 if (BiometryTimerAuth.IsEnabled)
                 {
                     BiometryTimerAuth.Stop();
+                    log.Info("Incom biometry Auth timer stoped");
                 }
                 if (BiometryTimerCreate.IsEnabled)
                 {
                     BiometryTimerCreate.Stop();
+                    log.Info("Incom biometry Create timer stoped");
                 }
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+                GC.Collect();
             }
             catch (Exception ex)
             {

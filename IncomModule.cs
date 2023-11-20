@@ -48,10 +48,8 @@ namespace Genesyslab.Desktop.Modules.Incom
 			this.viewManager = viewManager;
 			this.commandManager = commandManager;
 		//	this.viewEventManager = viewEventManager;
-            log = container.Resolve<ILogger>();
+            log = container.Resolve<ILogger>().CreateChildLogger("IncomModule"); 
             this.configManager = container.Resolve<IConfigManager>();
-           
-           
         }
 
         public void Initialize()
@@ -62,8 +60,16 @@ namespace Genesyslab.Desktop.Modules.Incom
             FileVersionInfo versionInfo = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
             log.Info("Incom: IncomModule  file version : " + versionInfo.FileVersion);
 
-            CfgReader config = new CfgReader(container);
-            container.RegisterInstance<ICfgReader>(config);
+                CfgReader config = new CfgReader(container);
+
+
+                //  string host = config.IncomOptions.GetAsString("incom.voipsniffer_host");
+
+                if (configManager.Task("InteractionWorkspace.incom.canUse") == false)
+                {
+                    log.Debug("Incom View is enabled");
+                   
+                container.RegisterInstance<ICfgReader>(config);
                 container.RegisterType<IIncomView, IncomView>();
                 container.RegisterType<IIncomViewModel, IncomViewModel>();
                 log.Info("Incom: IncomModule ActivateViewsWithRegions() start");
@@ -74,26 +80,8 @@ namespace Genesyslab.Desktop.Modules.Incom
                 UserEventListener userEventListener = new UserEventListener(container);
                 container.RegisterInstance<IUserEventListener>(userEventListener);
 
-                string host = config.IncomOptions.GetAsString("incom.voipsniffer_host");
-
-                    //if (configManager.Task("InteractionWorkspace.incom.canUse") == true)
-                    //{
-                    //    log.Debug("Incom View is enabled");
-                    //    container.RegisterType<IncomView, IncomView>();
-                    //    log.Debug(String.Format("{0} container.RegisterType<IIincomaView, IncomView>();", this.log));
-                    //    container.RegisterType<IIncomViewModel, IncomViewModel>();
-                    //    log.Debug(String.Format("{0} container.RegisterType<IIncomViewModel, IncomViewModel>();", this.log));
-                    //   // Put the Incom view in the region "InteractionWorksheetRegion"
-                    //    viewManager.ViewsByRegionName["InteractionWorksheetRegion"].Add(
-                    //            new ViewActivator() { ViewType = typeof(IIncomView), ViewName = "MyInteractionSample", ActivateView = true });
-                    // //   Here we register the view(GUI) "IMySampleButtonView"
-                    //    container.RegisterType<IIncomButtonView, IncomButtonView>();
-                    //   // Put the MySampleMenuView view in the region "CaseViewSideButtonRegion"(The case toggle button in the interaction windows)
-                    //    viewManager.ViewsByRegionName["CaseViewSideButtonRegion"].Add(
-                    //        new ViewActivator() { ViewType = typeof(IIncomButtonView), ViewName = "MySampleButtonView", ActivateView = true });
-                    //}
-                    ///////////////////////
-            RegisterCommands();
+                }
+                RegisterCommands();
             log.Info("Incom: IncomModule Initialize finished");
             }
             catch (Exception ex)

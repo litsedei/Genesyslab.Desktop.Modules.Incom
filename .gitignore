@@ -364,3 +364,5 @@ FodyWeavers.xsd
 /MySample/IMySampleMenuView2.cs
 /MySample/IMySamplePresentationModel.cs
 /MySample/MySampleMenuView - Copy.xaml
+/BiometryTimer.cs
+/Incom/IncomCfgReader/CfgReader.cs
