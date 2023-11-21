@@ -67,7 +67,7 @@ namespace Genesyslab.Desktop.Modules.Incom
 
                 if (configManager.Task("InteractionWorkspace.incom.canUse") == false)
                 {
-                    log.Debug("Incom View is enabled");
+                    log.Debug("Incom: View is enabled");
                    
                 container.RegisterInstance<ICfgReader>(config);
                 container.RegisterType<IIncomView, IncomView>();

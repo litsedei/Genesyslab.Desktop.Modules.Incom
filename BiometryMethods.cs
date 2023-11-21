@@ -12,6 +12,7 @@ using Genesyslab.Platform.Voice.Protocols.TServer;
 using System.IO.Packaging;
 using System.Windows.Media.Media3D;
 using Genesyslab.Desktop.Modules.Contacts.Requests;
+using Genesyslab.Platform.Commons.Protocols;
 
 namespace Genesyslab.Desktop.Modules.Incom.IncomUI
 {
@@ -23,18 +24,18 @@ namespace Genesyslab.Desktop.Modules.Incom.IncomUI
             RestClient client = new RestClient(cfgReader.GetMainConfig("voipsniffer_host"));
             try
             {
-                log.Info("Incom. Biometry request. Host: " +client.Options.BaseUrl+" path: "+path+" body: " +body.ToString());
+                log.Info("Incom: Biometry request. Host: " +client.Options.BaseUrl+" path: "+path+" body: " +body.ToString());
                 RestRequest request = new RestRequest(path, Method.Post);
                 request.Method = Method.Post;
                 request.Timeout = httpTimeout;
                 request.AddHeader("Accept", "application/json");
                 request.AddParameter("application/json", body, ParameterType.RequestBody);
                 response = client.Post(request);
-                log.Info("Incom. Biometry response: " + response.Content.ToString() + " Response code: " + response.StatusCode.ToString());
+                log.Info("Incom: Biometry response. Host: " +client.Options.BaseUrl+" path: "+path  + response.Content.ToString() + " Response code: " + response.StatusCode.ToString());
             }
             catch (Exception ex)
             {
-                log.Error("Incom. Biometry response ex: path::"+path.ToString()+ " "+ex.InnerException);
+                log.Error("Incom: Biometry response ex: path::"+path.ToString()+ " "+ex.InnerException);
                 response.ResponseStatus = ResponseStatus.Error;
                 response.ErrorMessage = ex.Message;
                 response.ErrorException = ex;
@@ -87,15 +88,17 @@ namespace Genesyslab.Desktop.Modules.Incom.IncomUI
                 return null;
             }
         }
-        private CallResponseJson biometry_callRecord_exec(string requestType, string callUUID, string channelType, string phoneNumber)
+        private CallResponseJson biometry_callRecord_exec(string requestType, string callUUID, string channelType, string phoneNumber, string side)
         {
             try
             {
+               // System.Threading.Thread.Sleep(1000);
                 CallReqRecord callReq = new CallReqRecord();
                 callReq.requestType = requestType;
                 callReq.callUUID = callUUID;
                 callReq.channelType = channelType;
                 callReq.phoneNumber = phoneNumber;
+                callReq.side = side;
                 string bodyCall = JsonConvert.SerializeObject(callReq);
                 // string bodyCall= JsonSerializer.Serialize(callReq);
                 // CallResponseJson callResponse = JsonSerializer.Deserialize<CallResponseJson>(PostBiometryJson(callPath, body).Content);
@@ -209,10 +212,10 @@ namespace Genesyslab.Desktop.Modules.Incom.IncomUI
             log.Info("Incom: button verify click");
             try
             {
-                log.Info("Incon Biometry: button Verify click" );
+                log.Info("Incom: Biometry button Verify click" );
                 lbl_bio_status.Text = null;
                 btn_bio_verify.IsEnabled = false;
-                AuthVB(GetTimer("auth"));
+                AuthVB(GetTimer("auth"),channelType,"click");
             }
             catch (Exception ex)
             {
@@ -223,14 +226,14 @@ namespace Genesyslab.Desktop.Modules.Incom.IncomUI
         {
             try
             {
-                log.Debug("Incon Biometry: button Delete click");
+                log.Debug("Incom: Biometry button Delete click");
                 lbl_bio_score.Text = string.Empty;
                 elps_bio.Fill = Brushes.Transparent;
                 elps_bio.Stroke = Brushes.Transparent;
                 var deleteResponse = biometry_delete_exec(cuid,callUUID,phoneNumber,agentId);
                 if (deleteResponse.errorInfo.code.ToString() == "0" && deleteResponse.errorInfo.description.ToString() == " voicetemplate_deleted")
                 {
-                    log.Info("Incon Biometry: "+ deleteResponse.errorInfo.description.ToString());
+                    log.Info("Incom: Biometry "+ deleteResponse.errorInfo.description.ToString());
                     btn_bio_delete.IsEnabled = false;
                     btn_bio_verify.IsEnabled = false;
                     if (BiometryTimerAuth.IsEnabled)
@@ -244,18 +247,22 @@ namespace Genesyslab.Desktop.Modules.Incom.IncomUI
                 log.Error("Incom: " + System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.ToString() + ex.InnerException);
             }
         }
-        private void AuthVB(DispatcherTimer timer)
+        private void AuthVB(DispatcherTimer timer, string callType, string type)
         {
             log.Info("Incom: AuthVB");
             try
             {
                 if (vbioRecordingAllowed == 1)
                 {
+                    if (type!="auto")
+                    {
+
+                    }
                     var getInfoResponse = biometry_getInfo_exec(cuid, phoneNumber);
+                    //callToken=getInfoResponse.businessInfo.callToken.ToString();
 
                     if (getInfoResponse.businessInfo.disableRecording == 0 && getInfoResponse.businessInfo.isVoiceId == true)
                     {
-                        biometry_callRecord_exec("RECORD", callUUID, channelType, phoneNumber);
                         biometry_call_exec("QUALITY", callUUID, channelType, phoneNumber, callToken);
                         timer.Interval = TimeSpan.FromSeconds(Convert.ToInt32(cfgReader.GetMainConfig("waitVoiceQualityCheck")));
                         timer.Tick += timer_tick_verify;
@@ -268,19 +275,15 @@ namespace Genesyslab.Desktop.Modules.Incom.IncomUI
                 log.Error("Incom: " + System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.ToString() + ex.InnerException);
             }
         }
-        private void CreateVB(DispatcherTimer timer)
+        private void CreateVB(DispatcherTimer timer, string channelType)
         {
             log.Info("Incom: CreateVB");
             var callReponseQ = biometry_call_exec("QUALITY", callUUID, channelType, phoneNumber,callToken);
             lbl_bio_status.Text = callReponseQ.errorInfo.description.ToString();
             log.Info("Incom: CreateVB " + callReponseQ.errorInfo.description.ToString());
-            if (callReponseQ.errorInfo.description!= "recording_not_started")
-            {
                 timer.Interval = TimeSpan.FromSeconds(Convert.ToInt32(cfgReader.GetMainConfig("waitVoiceQualityCheck")));
                 timer.Tick += timer_tick_create;
                 timer.Start();
-            }
-           
         }
         private static SolidColorBrush IncomBtnBrush(byte A, byte B, byte C)
         {
@@ -290,7 +293,7 @@ namespace Genesyslab.Desktop.Modules.Incom.IncomUI
         }
         private void bio_eventPluginExHandling_RestClient(Exception ex)
         {
-            log.Error("Incom Biometry ex: "+System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.ToString() + ex.Message);
+            log.Error("Incom:  Biometry ex: "+System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.ToString() + ex.Message);
             btn_bio_create.IsEnabled = btn_cr_state;
           //  Model.btnCreateState = false;
             btn_bio_delete.IsEnabled = false;
@@ -300,7 +303,6 @@ namespace Genesyslab.Desktop.Modules.Incom.IncomUI
             BiometryTimerCreate.Stop();
             lbl_bio_score.Text = string.Empty;
             lbl_bio_status.Text = ex.Message;
-
         }
     }
 }

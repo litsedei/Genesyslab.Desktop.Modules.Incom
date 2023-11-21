@@ -23,22 +23,22 @@ namespace Genesyslab.Desktop.Modules.Incom.IncomUI
         {
             try
             {
+                // int bioScore = 0;
+                // int speechLen = 0;
+                //int len = 0;
                 int minSpeechLenAuthentification = Convert.ToInt32(cfgReader.GetMainConfig("minSpeechLenAuthentification"));
                 var callResponse = biometry_call_exec("QUALITY", callUUID,channelType,phoneNumber,callToken);
-                int bioScore = 0;
-                int speechLen = 0;
-                int len = 0;
-                speechLen = Convert.ToInt32(Math.Round(Convert.ToDouble(callResponse.businessInfo.speechLen.ToString())));
-                len = Convert.ToInt32(Math.Round(Convert.ToDouble(callResponse.businessInfo.len.ToString())));
+                int speechLen = Convert.ToInt32(Math.Round(Convert.ToDouble(callResponse.businessInfo.speechLen.ToString())));
+                int len = Convert.ToInt32(Math.Round(Convert.ToDouble(callResponse.businessInfo.len.ToString())));
                 callToken = callResponse.businessInfo.callToken.ToString();
-                lbl_bio_status.Text = callResponse.businessInfo.speechLen.ToString();
+                lbl_bio_status.Text = "Сбор данных запущен " + speechLen;
                 if (speechLen >= minSpeechLenAuthentification)
                 {
                     var verifyResponse = biometry_verify_exec(callToken, cuid, phoneNumber, agentId, callUUID);
                     if (verifyResponse.errorInfo.code==0 && verifyResponse.errorInfo.description.ToString()== "verification_started") 
                     {
-                        bioScore = Convert.ToInt32(Math.Round(Convert.ToDouble(verifyResponse.businessInfo.prob.ToString())));
-                        lbl_bio_status.Text = "Аутентификация.Сбор данных запущен";
+                      int  bioScore = Convert.ToInt32(Math.Round(Convert.ToDouble(verifyResponse.businessInfo.prob.ToString())));
+                        lbl_bio_status.Text = "Сбор данных запущен";
                         lbl_bio_score.Text = bioScore.ToString();
                         vb_illuminator(bioScore);
                     }

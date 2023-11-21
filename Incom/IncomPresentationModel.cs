@@ -13,8 +13,6 @@ namespace Genesyslab.Desktop.Modules.Incom.IncomUI
 	public class IncomViewModel : IIncomViewModel, INotifyPropertyChanged
 	{
         // Field variables
-        //string calluuid = null;
-        bool _btnCreateState = false;
         /// <summary>
         /// Initializes a new instance of the <see cref="IncomViewModel"/> class.
         /// </summary>
@@ -30,14 +28,6 @@ namespace Genesyslab.Desktop.Modules.Incom.IncomUI
         /// Gets or sets the header to set in the parent view.
         /// </summary>
         /// <value>The calluuid.</value>
-
-        public bool btnCreateState
-        {
-            get { return _btnCreateState; }
-            set { if (_btnCreateState != value) { _btnCreateState = value; OnPropertyChanged("Header"); } }
-        }
-
-
         #endregion
 
         #region INotifyPropertyChanged Members

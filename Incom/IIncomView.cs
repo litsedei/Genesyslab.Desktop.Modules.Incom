@@ -11,6 +11,6 @@ namespace Genesyslab.Desktop.Modules.Incom.IncomUI
 
         void EventEstablishedListener(IMessage userEvent);
 
-        //  void EventReleasedListner(IMessage userEvent);
+         void EventReleasedListner(IMessage userEvent);
     }
 }

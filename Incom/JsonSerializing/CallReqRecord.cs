@@ -12,6 +12,7 @@ namespace Genesyslab.Desktop.Modules.Incom.JsonSerializing
         public string callUUID { get; internal set; }
         public string requestType { get; internal set; }
         public string phoneNumber { get; internal set; }
+        public string side { get; internal set; }
     }
 }
 

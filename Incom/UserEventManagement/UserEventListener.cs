@@ -67,6 +67,7 @@ namespace Genesyslab.Desktop.Modules.Incom.UserEvenManagment
                 }
                 if (userEvent.Id.Equals(65)) //EventReleased
                 {
+                    incomView.EventReleasedListner(userEvent);
                 }
                 if (userEvent.Id.Equals(61)) //EventDialing
                 {
@@ -102,6 +103,7 @@ namespace Genesyslab.Desktop.Modules.Incom.UserEvenManagment
         }
         void Protocol_Received(object sender, EventArgs e)
         {
+           // MessageBox.Show((e as MessageEventArgs).Message.ToString(), sender.ToString());
             EventHandlerTServerReceived((e as MessageEventArgs).Message);
         }
         public void RemoveHandler()
