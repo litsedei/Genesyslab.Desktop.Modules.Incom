@@ -52,7 +52,7 @@
             <ColumnDefinition Width="250"/>
         </Grid.ColumnDefinitions>
         <Canvas Grid.Column="1"  x:Name="bio_canvas"  Height="15" VerticalAlignment="Top" Margin="10,0,15,0" Grid.RowSpan="1">
-            <TextBlock x:Name="lbl_bio_status" Canvas.Right="0"  Canvas.Left="0" VerticalAlignment="Center" ScrollViewer.VerticalScrollBarVisibility="Disabled" HorizontalAlignment="Center" TextAlignment="Center" Width="230" Height="17"/>
+            <TextBlock x:Name="lbl_bio_status" Canvas.Right="0"   Canvas.Left="0" VerticalAlignment="Center" ScrollViewer.VerticalScrollBarVisibility="Disabled" HorizontalAlignment="Center" TextAlignment="Center" Width="230" Height="17"/>
         </Canvas>
         <Grid Grid.Column="0" x:Name="grid_bio_light" Margin="10,0,5,0" Grid.IsSharedSizeScope="True" Grid.RowSpan="2">
             <Ellipse x:Name="elps_bio"  Stroke="Transparent"  StrokeThickness="3" Width="32" Height="32" Grid.IsSharedSizeScope="True"/>

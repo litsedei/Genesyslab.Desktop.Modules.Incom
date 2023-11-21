@@ -34,11 +34,12 @@ namespace Genesyslab.Desktop.Modules.Incom.IncomUI
             }
             catch (Exception ex)
             {
-                log.Error("Incom. Biometry response ex: "+ex.InnerException);
+                log.Error("Incom. Biometry response ex: path::"+path.ToString()+ " "+ex.InnerException);
                 response.ResponseStatus = ResponseStatus.Error;
                 response.ErrorMessage = ex.Message;
                 response.ErrorException = ex;
                 response.Content = ex.Message + " " + response.StatusCode.ToString();
+                lbl_bio_status.Text=ex.Message;
             }
             client.Dispose();
             return response; 
@@ -54,6 +55,7 @@ namespace Genesyslab.Desktop.Modules.Incom.IncomUI
                 string getinfoReq = JsonConvert.SerializeObject(getInfoReqBody);
                 GetInfoResponseJson getInfoResponse = JsonConvert.DeserializeObject<GetInfoResponseJson>(PostBiometryJson(cfgReader.GetMainConfig("getinfo_path"), getinfoReq).Content);
                 //GetInfoResponseJson getInfoResponse = JsonSerializer.Deserialize<GetInfoResponseJson>(PostBiometryJson(getInfoPath, body).Content);
+                
                 return getInfoResponse;
             }
             catch (Exception ex)
@@ -178,24 +180,23 @@ namespace Genesyslab.Desktop.Modules.Incom.IncomUI
         {
             try
             {
+                log.Info("Incon Biometry: button Create click");
                 var createResponse = biometry_create_exec(callToken, cuid, phoneNumber, agentId, callUUID);
                 lbl_bio_status.Text = createResponse.errorInfo.description.ToString();
-                if (createResponse.errorInfo.code.ToString() == "0" && createResponse.errorInfo.description.ToString() == "Слепок голоса записан")
+                if (createResponse.errorInfo.code.ToString() == "0" && createResponse.errorInfo.description.ToString() == "do_what_you_please")
                 {
                     //agentCanAuthVP = true ? btn_bio_virefy.IsEnabled = true : btn_bio_virefy.IsEnabled = false;
                     //agentCanDeleteVP = true ? btn_bio_delete.IsEnabled = true : btn_bio_delete.IsEnabled = false;
                     btn_bio_delete.IsEnabled = agentCanDeleteVP ? true : false;
                     btn_bio_create.IsEnabled = false;
+                    lbl_bio_status.Text="Голосовой эталон сохранен";
+                    log.Info("Incon Biometry: Voice print saved");
                     BiometryTimerCreate.Stop();
-                    //if (startAutomaticAuthentication)
-                    //{
-                    //    lbl_bio_status.Text = "??--";
-                    //    AuthVB(GetTimer("auth"));
-                    //}
-                    //else
-                    //{
-                    //    btn_bio_verify.IsEnabled = agentCanAuthVP ? true : false;
-                    //}
+                }
+                if (createResponse.errorInfo.code.ToString() == "1" && createResponse.errorInfo.description.ToString() == "not_enough_vectors")
+                {
+                    lbl_bio_status.Text = "Ошибка.Голосовой эталон не сохранен";
+                    log.Error("Incon Biometry: Voice print not saved :"+ createResponse.errorInfo.description.ToString());
                 }
             }
             catch (Exception ex)
@@ -203,10 +204,12 @@ namespace Genesyslab.Desktop.Modules.Incom.IncomUI
                 log.Error(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.ToString() + ex.InnerException);
             }
         }
-        private void btn_bioVeify_click(object sender, RoutedEventArgs e)
+        private void btn_bioVerify_click(object sender, RoutedEventArgs e)
         {
+            log.Info("Incom: button verify click");
             try
             {
+                log.Info("Incon Biometry: button Verify click" );
                 lbl_bio_status.Text = null;
                 btn_bio_verify.IsEnabled = false;
                 AuthVB(GetTimer("auth"));
@@ -220,22 +223,19 @@ namespace Genesyslab.Desktop.Modules.Incom.IncomUI
         {
             try
             {
+                log.Debug("Incon Biometry: button Delete click");
                 lbl_bio_score.Text = string.Empty;
                 elps_bio.Fill = Brushes.Transparent;
                 elps_bio.Stroke = Brushes.Transparent;
                 var deleteResponse = biometry_delete_exec(cuid,callUUID,phoneNumber,agentId);
-                if (deleteResponse.errorInfo.code.ToString() == "0" && deleteResponse.errorInfo.description.ToString() == "Слепок голоса удалён")
+                if (deleteResponse.errorInfo.code.ToString() == "0" && deleteResponse.errorInfo.description.ToString() == " voicetemplate_deleted")
                 {
+                    log.Info("Incon Biometry: "+ deleteResponse.errorInfo.description.ToString());
                     btn_bio_delete.IsEnabled = false;
                     btn_bio_verify.IsEnabled = false;
                     if (BiometryTimerAuth.IsEnabled)
                     {
                         BiometryTimerAuth.Stop();
-                    }
-
-                    if (agentCanCreateVP == true)
-                    {
-                        CreateVB(GetTimer("create"));
                     }
                 }
             }
@@ -246,6 +246,7 @@ namespace Genesyslab.Desktop.Modules.Incom.IncomUI
         }
         private void AuthVB(DispatcherTimer timer)
         {
+            log.Info("Incom: AuthVB");
             try
             {
                 if (vbioRecordingAllowed == 1)
@@ -254,10 +255,7 @@ namespace Genesyslab.Desktop.Modules.Incom.IncomUI
 
                     if (getInfoResponse.businessInfo.disableRecording == 0 && getInfoResponse.businessInfo.isVoiceId == true)
                     {
-                        if (isRecordStarted==false)
-                        {
-                            biometry_callRecord_exec("RECORD", callUUID, channelType, phoneNumber);
-                        }
+                        biometry_callRecord_exec("RECORD", callUUID, channelType, phoneNumber);
                         biometry_call_exec("QUALITY", callUUID, channelType, phoneNumber, callToken);
                         timer.Interval = TimeSpan.FromSeconds(Convert.ToInt32(cfgReader.GetMainConfig("waitVoiceQualityCheck")));
                         timer.Tick += timer_tick_verify;
@@ -272,11 +270,17 @@ namespace Genesyslab.Desktop.Modules.Incom.IncomUI
         }
         private void CreateVB(DispatcherTimer timer)
         {
-            var callReponseQ = biometry_callRecord_exec("RECORD", callUUID, channelType, phoneNumber);
+            log.Info("Incom: CreateVB");
+            var callReponseQ = biometry_call_exec("QUALITY", callUUID, channelType, phoneNumber,callToken);
             lbl_bio_status.Text = callReponseQ.errorInfo.description.ToString();
-            timer.Interval = TimeSpan.FromSeconds(Convert.ToInt32(cfgReader.GetMainConfig("waitVoiceQualityCheck")));
-            timer.Tick += timer_tick_create;
-            timer.Start();
+            log.Info("Incom: CreateVB " + callReponseQ.errorInfo.description.ToString());
+            if (callReponseQ.errorInfo.description!= "recording_not_started")
+            {
+                timer.Interval = TimeSpan.FromSeconds(Convert.ToInt32(cfgReader.GetMainConfig("waitVoiceQualityCheck")));
+                timer.Tick += timer_tick_create;
+                timer.Start();
+            }
+           
         }
         private static SolidColorBrush IncomBtnBrush(byte A, byte B, byte C)
         {
@@ -286,8 +290,9 @@ namespace Genesyslab.Desktop.Modules.Incom.IncomUI
         }
         private void bio_eventPluginExHandling_RestClient(Exception ex)
         {
-            log.Error("Incom: "+System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.ToString() + ex.Message);
-            btn_bio_create.IsEnabled = false;
+            log.Error("Incom Biometry ex: "+System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.ToString() + ex.Message);
+            btn_bio_create.IsEnabled = btn_cr_state;
+          //  Model.btnCreateState = false;
             btn_bio_delete.IsEnabled = false;
             btn_bio_verify.IsEnabled = false;
             elps_bio.Fill = Brushes.Transparent;

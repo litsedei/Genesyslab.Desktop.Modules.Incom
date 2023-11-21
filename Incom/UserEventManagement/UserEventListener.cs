@@ -25,6 +25,7 @@ using Genesyslab.Desktop.Modules.Incom.IncomConfgReader;
 using Genesyslab.Desktop.Infrastructure.ViewManager;
 using Genesyslab.Desktop.Modules.Windows.Event;
 using Genesyslab.Platform.Commons.Connection;
+using System.Web.UI.WebControls;
 
 
 namespace Genesyslab.Desktop.Modules.Incom.UserEvenManagment
@@ -60,8 +61,9 @@ namespace Genesyslab.Desktop.Modules.Incom.UserEvenManagment
                 if (userEvent.Id.Equals(64))  //64 - EventEstablished
                 {
                     log.Info("IncomModule EventEstablished");
-                //    EventEstablished ee = (EventEstablished)userEvent;
-                  //  Platform.Commons.Collections.KeyValueCollection UserData = ee.UserData as Platform.Commons.Collections.KeyValueCollection;
+                    //    EventEstablished ee = (EventEstablished)userEvent;
+                    //  Platform.Commons.Collections.KeyValueCollection UserData = ee.UserData as Platform.Commons.Collections.KeyValueCollection;
+                    incomView.EventEstablishedListener(userEvent);
                 }
                 if (userEvent.Id.Equals(65)) //EventReleased
                 {

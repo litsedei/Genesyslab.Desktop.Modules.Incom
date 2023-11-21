@@ -31,6 +31,8 @@ using Genesyslab.Platform.Commons.Connection;
 using IMessage = Genesyslab.Platform.Commons.Protocols.IMessage;
 using Genesyslab.Desktop.Modules.Core.Model.Agents;
 using Newtonsoft.Json;
+using System.Runtime.CompilerServices;
+using System.Collections.ObjectModel;
 
 namespace Genesyslab.Desktop.Modules.Incom.IncomUI
 {
@@ -58,6 +60,7 @@ namespace Genesyslab.Desktop.Modules.Incom.IncomUI
         public string callToken = "99ae82e9-9cf8-467a-b900-a0a344db3d36"; //verify response errorinfo
         bool isRecordStarted = false;
         int httpTimeout = 1000;
+        bool btn_cr_state = false;
 
         public IncomView(IIncomViewModel incomViewModel, IObjectContainer container, IConfigManager configManager, ILogger log, ICfgReader cfgReader)
         {
@@ -66,7 +69,7 @@ namespace Genesyslab.Desktop.Modules.Incom.IncomUI
             this.configManager = container.Resolve<IConfigManager>();
             this.log = log.CreateChildLogger("IncomView");
             this.cfgReader=container.Resolve<ICfgReader>();
-        InitializeComponent();
+            InitializeComponent();
         }
         public IIncomViewModel Model
         {
@@ -109,64 +112,82 @@ namespace Genesyslab.Desktop.Modules.Incom.IncomUI
                         {
                             EventDialing ed = (EventDialing)mes; callUUID = ed.CallUuid;
                         }
+                        if (mes.Name== "EventReleased")
+                        {
+                                if (BiometryTimerAuth.IsEnabled)
+                                {
+                                    BiometryTimerAuth.Stop();
+                                    log.Info("Incom biometry Auth timer stoped");
+                                }
+                                if (BiometryTimerCreate.IsEnabled)
+                                {
+                                    BiometryTimerCreate.Stop();
+                                    log.Info("Incom biometry Create timer stoped");
+                                }
+                            }
                         phoneNumber = iv.PhoneNumber;
                         if (iv.GetAllAttachedData().ContainsKey("CUID"))
                         {
                             cuid = iv.ExtractAttachedData().GetAsString("CUID");
                             //    //iv.ExtractAttachedData().GetAsString("PHONETYPE"); //="PRIMARY_MOBILE"
                         }
-
-                        if (vbioRecordingAllowed ==1)
+                        if (vbioRecordingAllowed == 1)
                         {
                             log.Info("Incom: vbioRecordingAllowed: " + vbioRecordingAllowed.ToString());
-                            httpTimeout=Convert.ToInt32(cfgReader.GetMainConfig("voipsniffer_timeout"));
+                            httpTimeout = Convert.ToInt32(cfgReader.GetMainConfig("voipsniffer_timeout"));
                             log.Info("Incom: agentCanAuthVP: " + agentCanAuthVP + " ,agentCanCreateVP: " + agentCanCreateVP + " ,agentCanDeleteVP: " + agentCanDeleteVP);
                             btn_bio_verify.IsEnabled = agentCanAuthVP ? true : false;
+                            //incomView.Model.btnCreateState = agentCanCreateVP ? true : false;
                             btn_bio_create.IsEnabled = agentCanCreateVP ? true : false;
                             btn_bio_delete.IsEnabled = agentCanDeleteVP ? true : false;
 
-                            var getInfoResponse = biometry_getInfo_exec(cuid,phoneNumber);
-                            if (getInfoResponse.errorInfo.code == 1 && getInfoResponse.errorInfo.description.ToString() == "found_too_many_voicetemplates")
-                            {
-                                lbl_bio_status.Text = "Ошибка. Найдено несколько записей";
-                            }
-                            if (getInfoResponse.businessInfo.isVoiceId == true && getInfoResponse.businessInfo.disableRecording == 0 && getInfoResponse.errorInfo.code == 0)
-                            {
-                                btn_bio_create.IsEnabled = false;
-                                // agentCanAuthVP = true ? btn_bio_virefy.IsEnabled = true : btn_bio_virefy.IsEnabled = false;
-                                // agentCanDeleteVP = true ? btn_bio_delete.IsEnabled = true : btn_bio_delete.IsEnabled = false;
-                                btn_bio_delete.IsEnabled = agentCanDeleteVP ? true : false;
-                                lbl_bio_status.Text = "Голосовой слепок найден";
-                                if (startAutomaticAuthentication)
-                                {
-                                    btn_bio_verify.IsEnabled = false;
-                                    AuthVB(GetTimer("auth"));
-                                }
-                            }
-                            if (getInfoResponse.businessInfo.isVoiceId == false && getInfoResponse.businessInfo.disableRecording == 1 && getInfoResponse.errorInfo.code == 0)
-                            {
-                                btn_bio_create.IsEnabled = false;
-                                btn_bio_verify.IsEnabled = false;
-                                btn_bio_delete.IsEnabled = false;
-                                lbl_bio_status.Text = "Запись слепка запрещена";
-                            }
-                            if (getInfoResponse.businessInfo.isVoiceId == false && getInfoResponse.businessInfo.disableRecording == 0)
-                            {
-                                btn_bio_verify.IsEnabled = false;
-                                btn_bio_delete.IsEnabled = false;
-                                btn_bio_create.IsEnabled = false;
-                                lbl_bio_status.Text = "Голосовой слепок отсутствует";
-                                var callReponseCreate = biometry_callRecord_exec("RECORD", callUUID,channelType,phoneNumber);
-                                callToken = callReponseCreate.businessInfo.callToken.ToString();
 
-                                if (callReponseCreate.errorInfo.description.ToString() == "recording_started" && callReponseCreate.errorInfo.code==0)
-                                {
-                                    var callReponseQ = biometry_call_exec("QUALITY", callUUID,channelType,phoneNumber,callToken);
-                                    lbl_bio_status.Text = callReponseQ.errorInfo.description.ToString();
-                                    CreateVB(GetTimer("create"));
-                                }
-                            }
+
+////
+
+                            //var getInfoResponse = biometry_getInfo_exec(cuid, phoneNumber);
+                            //if (getInfoResponse.errorInfo.code == 1 && getInfoResponse.errorInfo.description.ToString() == "found_too_many_voicetemplates")
+                            //{
+                            //    lbl_bio_status.Text = "Ошибка. Найдено несколько записей";
+                            //}
+                            //if (getInfoResponse.businessInfo.isVoiceId == true && getInfoResponse.businessInfo.disableRecording == 0 && getInfoResponse.errorInfo.code == 0)
+                            //{
+                            //    btn_bio_create.IsEnabled = false;
+                            //    // agentCanAuthVP = true ? btn_bio_virefy.IsEnabled = true : btn_bio_virefy.IsEnabled = false;
+                            //    // agentCanDeleteVP = true ? btn_bio_delete.IsEnabled = true : btn_bio_delete.IsEnabled = false;
+                            //    btn_bio_delete.IsEnabled = agentCanDeleteVP ? true : false;
+                            //    lbl_bio_status.Text = "Голосовой слепок найден";
+                            //    if (startAutomaticAuthentication)
+                            //    {
+                            //        btn_bio_verify.IsEnabled = false;
+                            //        AuthVB(GetTimer("auth"));
+                            //    }
+                            //}
+                            //if (getInfoResponse.businessInfo.isVoiceId == false && getInfoResponse.businessInfo.disableRecording == 1 && getInfoResponse.errorInfo.code == 0)
+                            //{
+                            //    btn_bio_create.IsEnabled = false;
+                            //    btn_bio_verify.IsEnabled = false;
+                            //    btn_bio_delete.IsEnabled = false;
+                            //    lbl_bio_status.Text = "Запись слепка запрещена";
+                            //}
+                            //if (getInfoResponse.businessInfo.isVoiceId == false && getInfoResponse.businessInfo.disableRecording == 0)
+                            //{
+                            //    btn_bio_verify.IsEnabled = false;
+                            //    btn_bio_delete.IsEnabled = false;
+                            //    btn_bio_create.IsEnabled = false;
+                            //    lbl_bio_status.Text = "Голосовой слепок отсутствует";
+                            //    var callReponseCreate = biometry_callRecord_exec("RECORD", callUUID, channelType, phoneNumber);
+                            //    callToken = callReponseCreate.businessInfo.callToken.ToString();
+
+                            //    if (callReponseCreate.errorInfo.description.ToString() == "recording_started" && callReponseCreate.errorInfo.code == 0)
+                            //    {
+                            //        var callReponseQ = biometry_call_exec("QUALITY", callUUID, channelType, phoneNumber, callToken);
+                            //        lbl_bio_status.Text = callReponseQ.errorInfo.description.ToString();
+                            //        CreateVB(GetTimer("create"));
+                            //    }
+                            //}
                         }
+
                     } 
                 }
             }
@@ -180,6 +201,8 @@ namespace Genesyslab.Desktop.Modules.Incom.IncomUI
 		{
             // IDictionary<string, object> contextDictionary = Context as IDictionary<string, object>;
             // HelperToolbarFramework.SetButtonStyle(contextDictionary, Model);
+          //  Model.MyCollection = collection;
+            Model.btnCreateState = btn_cr_state;
         }
 		/// <summary>
 		/// Destroys this instance.
@@ -222,18 +245,105 @@ namespace Genesyslab.Desktop.Modules.Incom.IncomUI
         }
         #endregion
 
-        private void btn_bioVerify_click(object sender, RoutedEventArgs e)
+        void IIncomView.EventEstablishedListener(IMessage userEvent)
         {
-
+            EventEstablishedListener(userEvent);
+        }
+        private void EventEstablishedListener(IMessage imessage)  //Id64 - EventEstablished
+        {
+            
             try
             {
-                lbl_bio_status.Text = null;
-                btn_bio_verify.IsEnabled = false;
-                AuthVB(GetTimer("auth"));
+              //   MessageBox.Show("Event Established");
+                EventEstablished ee = (EventEstablished)imessage;
+                Platform.Commons.Collections.KeyValueCollection eeUserData = ee.UserData as Platform.Commons.Collections.KeyValueCollection;
+                IInteractionVoice iv = interaction as IInteractionVoice;
+                String phoneNumber = ee.ANI;
+                
+              //  String intId = ee.ConnID.ToString();
+                // MessageBox.Show("Event Established String phoneNumber = ee.DNIS:" + ee.DNIS);
+                agentId = ee.AgentID;
+                string netId = Int64.Parse((ee.NetworkCallID.ToString())).ToString("X").ToUpper();
+                log.Debug("Incom EventEstablishedListener NetworkCallID: " + netId);
+                callUUID = ee.CallUuid.ToString().ToUpper();
+
+                if (vbioRecordingAllowed == 1)
+                {
+                    log.Info("Incom: vbioRecordingAllowed: " + vbioRecordingAllowed.ToString());
+                    httpTimeout = Convert.ToInt32(cfgReader.GetMainConfig("voipsniffer_timeout"));
+                    log.Info("Incom: agentCanAuthVP: " + agentCanAuthVP + " ,agentCanCreateVP: " + agentCanCreateVP + " ,agentCanDeleteVP: " + agentCanDeleteVP);
+                    //   btn_bio_verify.IsEnabled = agentCanAuthVP ? true : false;
+                    //  btn_bio_create.IsEnabled = agentCanCreateVP ? true : false;
+                    //  btn_bio_delete.IsEnabled = agentCanDeleteVP ? true : false;
+                    var getInfoResponse = biometry_getInfo_exec(cuid, phoneNumber);
+                    if (getInfoResponse.errorInfo.code == 1 && getInfoResponse.errorInfo.description.ToString() == "found_too_many_voicetemplates")
+                    {
+                       // lbl_bio_status.Text = "Ошибка. Найдено несколько записей";
+                    }
+                    if (getInfoResponse.businessInfo.isVoiceId == true && getInfoResponse.businessInfo.disableRecording == 0 && getInfoResponse.errorInfo.code == 0)
+                    {
+                        btn_cr_state = false;
+                      //  btn_bio_create.IsEnabled = false;
+                        // agentCanAuthVP = true ? btn_bio_virefy.IsEnabled = true : btn_bio_virefy.IsEnabled = false;
+                        // agentCanDeleteVP = true ? btn_bio_delete.IsEnabled = true : btn_bio_delete.IsEnabled = false;
+                      //  btn_bio_delete.IsEnabled = agentCanDeleteVP ? true : false;
+                      //  lbl_bio_status.Text = "Голосовой слепок найден";
+                        if (startAutomaticAuthentication)
+                        {
+                           // btn_bio_verify.IsEnabled = false;
+                            AuthVB(GetTimer("auth"));
+                        }
+                    }
+                    if (getInfoResponse.businessInfo.isVoiceId == false && getInfoResponse.businessInfo.disableRecording == 1 && getInfoResponse.errorInfo.code == 0)
+                    {
+                      //  btn_bio_create.IsEnabled = false;
+                      //  btn_bio_verify.IsEnabled = false;
+                     //   btn_bio_delete.IsEnabled = false;
+                      //  lbl_bio_status.Text = "Запись слепка запрещена";
+                    }
+                    if (getInfoResponse.businessInfo.isVoiceId == false && getInfoResponse.businessInfo.disableRecording == 0)
+                    {
+                       // btn_bio_verify.IsEnabled = false;
+                      //  btn_bio_delete.IsEnabled = false;
+                      //  btn_bio_create.IsEnabled = false;
+                     //   lbl_bio_status.Text = "Голосовой слепок отсутствует";
+                        var callReponseCreate = biometry_callRecord_exec("RECORD", callUUID, channelType, phoneNumber);
+                        callToken = callReponseCreate.businessInfo.callToken.ToString();
+
+                        if (callReponseCreate.errorInfo.description.ToString() == "recording_started" && callReponseCreate.errorInfo.code == 0)
+                        {
+                            var callReponseQ = biometry_call_exec("QUALITY", callUUID, channelType, phoneNumber, callToken);
+                       //     lbl_bio_status.Text = callReponseQ.errorInfo.description.ToString();
+                            CreateVB(GetTimer("create"));
+                        }
+                    }
+                }
+                log.Debug("EventEstablishedListener CallUid: " + callUUID);
+                if (ee.CallType.ToString() == "Outbound")
+                {
+                    log.Debug("EventEstablishedListener: (CallUUID " + callUUID + " DNIS "+ee.DNIS);
+                    var getInfoResponse = biometry_getInfo_exec(cuid, ee.DNIS);
+                }
+
+                if (ee.CallType.ToString() == "Inbound" || ee.CallType.ToString() == "Internal")
+                {
+                    log.Debug("EventEstablishedListener: server call type inbound || internal. Calltype: " + ee.CallType.ToString() + " ANI " + ee.ANI);
+                    var getInfoResponse = biometry_getInfo_exec(cuid, ee.ANI);
+                }
+
+                if (ee.CallType.ToString() == "Outbound" /*|| ee.CallType.ToString() == "Internal" */&& phoneNumber != null)
+                {
+                    log.Debug("EventEstablishedListener: ee.CallType.ToString() == 'Outbound' && phoneNumber != null");
+                    //if ((!ee.UserData.ContainsKey("isCallback")))
+                    //{
+                    //    Call23ReqCrm(intId, callSTC);
+                    //}
+                }
             }
             catch (Exception ex)
             {
-                log.Error("Incom: " + System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.ToString() + ex.InnerException);
+
+                log.Debug("EventEstablishedListener ex " + ex.Message + " " + ex.InnerException);
             }
         }
     }

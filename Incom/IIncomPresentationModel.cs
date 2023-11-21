@@ -9,7 +9,7 @@ namespace Genesyslab.Desktop.Modules.Incom.IncomUI
 
 	public interface IIncomViewModel
 	{
-      //  String Header { get; set; }
+        bool btnCreateState { get; set; }
         // IIncomViewModel Model { get; set; }
 
         //ICase Case { get; set; }

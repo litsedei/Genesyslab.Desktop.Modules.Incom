@@ -35,14 +35,23 @@ namespace Genesyslab.Desktop.Modules.Incom.IncomUI
                 if (speechLen >= minSpeechLenAuthentification)
                 {
                     var verifyResponse = biometry_verify_exec(callToken, cuid, phoneNumber, agentId, callUUID);
-                    bioScore = (Convert.ToInt32(Math.Round(Convert.ToDouble(verifyResponse.businessInfo.prob.ToString()))));
-                    lbl_bio_score.Text = bioScore.ToString();
-                    vb_illuminator(bioScore);
+                    if (verifyResponse.errorInfo.code==0 && verifyResponse.errorInfo.description.ToString()== "verification_started") 
+                    {
+                        bioScore = Convert.ToInt32(Math.Round(Convert.ToDouble(verifyResponse.businessInfo.prob.ToString())));
+                        lbl_bio_status.Text = "Аутентификация.Сбор данных запущен";
+                        lbl_bio_score.Text = bioScore.ToString();
+                        vb_illuminator(bioScore);
+                    }
+                    if (verifyResponse.errorInfo.code == 1)
+                    {
+                        lbl_bio_status.Text = verifyResponse.errorInfo.description.ToString();
+                        log.Error("Incom. Biometry: verify error: "+ verifyResponse.errorInfo.description.ToString());
+                    }
                 }
             }
             catch (Exception ex)
             {
-                log.Error("Incom: Biometry verify ex: " + ex.InnerException);
+                log.Error("Incom. Biometry verify ex: " + ex.InnerException);
             }
         }
         private void timer_tick_create(object sender, EventArgs e)
@@ -55,7 +64,7 @@ namespace Genesyslab.Desktop.Modules.Incom.IncomUI
                 var callResponse = biometry_call_exec("QUALITY", callUUID,channelType,phoneNumber,callToken);
                 speechLen = Convert.ToInt32(Math.Round(Convert.ToDouble(callResponse.businessInfo.speechLen.ToString())));
                 len = Convert.ToInt32(Math.Round(Convert.ToDouble(callResponse.businessInfo.len.ToString())));
-
+                lbl_bio_status.Text = "Регистрация.Сбор данных запущен "+speechLen.ToString() + " сек";
                 lbl_bio_status.Text = callResponse.errorInfo.description.ToString();
                 if (speechLen >= minSpeechLenCreate)
                 {
@@ -66,12 +75,12 @@ namespace Genesyslab.Desktop.Modules.Incom.IncomUI
             }
             catch (Exception ex)
             {
-                log.Error("Incom: Biometry create ex:" + ex.InnerException);
+                log.Error("Incom. Biometry create ex:" + ex.InnerException);
             }
         }
         private void vb_illuminator(int bioScore)
         {
-           int lowProb = Convert.ToInt32(cfgReader.GetMainConfig("lowprob"));
+            int lowProb = Convert.ToInt32(cfgReader.GetMainConfig("lowprob"));
             int highProb = Convert.ToInt32(cfgReader.GetMainConfig("highprob"));
             switch (bioScore)
             {
@@ -79,7 +88,7 @@ namespace Genesyslab.Desktop.Modules.Incom.IncomUI
                     SolidColorBrush msbRed = IncomBtnBrush(248, 63, 63);
                     elps_bio.Stroke = msbRed;
                     lbl_bio_score.Foreground = msbRed;
-                    lbl_bio_score.Text = n.ToString() + " %";
+                    lbl_bio_score.Text = n.ToString() + "%";
                     lbl_bio_status.Text = "Аутентификация не пройдена";
                     btn_bio_create.IsEnabled = false;
                     break;
@@ -88,7 +97,7 @@ namespace Genesyslab.Desktop.Modules.Incom.IncomUI
                     SolidColorBrush msbYellow = IncomBtnBrush(247, 227, 59);
                     elps_bio.Stroke = msbYellow;
                     lbl_bio_score.Foreground = msbYellow;
-                    lbl_bio_score.Text = n.ToString() + " %";
+                    lbl_bio_score.Text = n.ToString() + "%";
                     lbl_bio_status.Text = "Аутентификация не завершена";
                     btn_bio_create.IsEnabled = false;
                     break;
@@ -97,7 +106,7 @@ namespace Genesyslab.Desktop.Modules.Incom.IncomUI
                     SolidColorBrush msbGreen = IncomBtnBrush(17, 186, 54);
                     elps_bio.Stroke = msbGreen;
                     lbl_bio_score.Foreground = msbGreen;
-                    lbl_bio_score.Text = n.ToString() + " %";
+                    lbl_bio_score.Text = n.ToString() + "%";
                     lbl_bio_status.Text = "Успешная аутентификация";
                     btn_bio_create.IsEnabled = false;
                     break;

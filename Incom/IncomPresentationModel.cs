@@ -14,7 +14,7 @@ namespace Genesyslab.Desktop.Modules.Incom.IncomUI
 	{
         // Field variables
         //string calluuid = null;
-        string header = "My Sample Header";
+        bool _btnCreateState = false;
         /// <summary>
         /// Initializes a new instance of the <see cref="IncomViewModel"/> class.
         /// </summary>
@@ -31,10 +31,10 @@ namespace Genesyslab.Desktop.Modules.Incom.IncomUI
         /// </summary>
         /// <value>The calluuid.</value>
 
-        public string Header
+        public bool btnCreateState
         {
-            get { return header; }
-            set { if (header != value) { header = value; OnPropertyChanged("Header"); } }
+            get { return _btnCreateState; }
+            set { if (_btnCreateState != value) { _btnCreateState = value; OnPropertyChanged("Header"); } }
         }
 
 
