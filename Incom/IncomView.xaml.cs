@@ -37,18 +37,18 @@ using System.Threading;
 
 namespace Genesyslab.Desktop.Modules.Incom.IncomUI
 {
-	public partial class IncomView : UserControl, IIncomView
-	{
+    public partial class IncomView : UserControl, IIncomView
+    {
         readonly IObjectContainer container;
         private readonly ILogger log;
         readonly IConfigManager configManager;
         private IInteraction interaction;
         private IIncomView incomView;
         private ICfgReader cfgReader;
-		public DispatcherTimer timer = new DispatcherTimer();
+        public DispatcherTimer timer = new DispatcherTimer();
 
         //incom  config wde
-        bool startAutomaticAuthentication = true;
+        bool startAutomaticAuthentication = false;
         bool agentCanAuthVP = true;  //wde role
         bool agentCanCreateVP = true; //wde role
         bool agentCanDeleteVP = true;  //wde role 
@@ -59,7 +59,7 @@ namespace Genesyslab.Desktop.Modules.Incom.IncomUI
         string cuid = "6886537";            //getinfo response
         public string callUUID = "998U87J5FGADL3QTR0F0U2LAES00RGLF";
         public string callToken = "afb97bd0-0c89-6c11-c3d4-afb5e27eb6b7"; //verify response errorinfo
-        bool isRecordStarted = false;
+       // bool isRecordStarted = false;
         int httpTimeout = 1000;
         bool btn_cr_state = false;
         string recordState;
@@ -70,13 +70,13 @@ namespace Genesyslab.Desktop.Modules.Incom.IncomUI
             this.container = container;
             this.configManager = container.Resolve<IConfigManager>();
             this.log = log.CreateChildLogger("IncomView");
-            this.cfgReader=container.Resolve<ICfgReader>();
+            this.cfgReader = container.Resolve<ICfgReader>();
             InitializeComponent();
         }
         public IIncomViewModel Model
         {
             get { return this.DataContext as IIncomViewModel; }
-            set { this.DataContext = value; 
+            set { this.DataContext = value;
             }
         }
         public object Context { get; set; }
@@ -89,7 +89,7 @@ namespace Genesyslab.Desktop.Modules.Incom.IncomUI
         {
             try
             {
-                    IDictionary<string, object> contextDisctionary = Context as IDictionary<string, object>;
+                IDictionary<string, object> contextDisctionary = Context as IDictionary<string, object>;
                 object caseView;
                 contextDisctionary.TryGetValue("CaseView", out caseView);
                 object caseObject;
@@ -105,11 +105,11 @@ namespace Genesyslab.Desktop.Modules.Incom.IncomUI
                         log.Info("IncomCreate: " + interaction.Type.ToString());
                         IInteractionVoice iv = interaction as IInteractionVoice;
                         agentId = iv.Agent.UserName;
-                        
+
                         IMessage mes = iv.EntrepriseLastInteractionEvent as IMessage;
                         if (mes.Name == "EventEstablished")
                         {
-                            EventEstablished ee = (EventEstablished)mes; 
+                            EventEstablished ee = (EventEstablished)mes;
                             callUUID = ee.CallUuid;
                         }
 
@@ -181,42 +181,45 @@ namespace Genesyslab.Desktop.Modules.Incom.IncomUI
                                 btn_bio_delete.IsEnabled = false;
                                 btn_bio_create.IsEnabled = false;
                                 lbl_bio_status.Text = "Голосовой слепок отсутствует";
-                                //if (channelType=="IN")
-                                //{
-                                //    var callReponseCreate = biometry_callRecord_exec("RECORD", callUUID, channelType, phoneNumber, "0");
-                                //     callToken = callReponseCreate.businessInfo.callToken.ToString();
-                                //    recordState= callReponseCreate.errorInfo.description.ToString();
-                                //}
+                                if (channelType == "IN")
+                                {
+                                    var callReponseCreate = biometry_callRecord_exec("RECORD", callUUID, channelType, phoneNumber, "0");
+                                    log.Info("CallToken FROM VIEW");
+                                    callToken = callReponseCreate.businessInfo.callToken.ToString();
+                                    log.Info("incomView.SetCallToken FROM VIEW");
+                                    incomView.SetCallToken(callReponseCreate.businessInfo.callToken.ToString());
+                                    recordState = callReponseCreate.errorInfo.description.ToString();
+                                }
 
                                 if (recordState == "recording_started")
-                               {
+                                {
                                     var callReponseQ = biometry_call_exec("QUALITY", callUUID, channelType, phoneNumber, callToken);
                                     lbl_bio_status.Text = callReponseQ.errorInfo.description.ToString();
-                                    CreateVB(GetTimer("create"),channelType);
-                               }
+                                    CreateVB(GetTimer("create"), channelType);
+                                }
                             }
                         }
-                    } 
+                    }
                 }
             }
             catch (Exception ex)
             {
-                log.Error("Incom: "+System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.ToString() + ex.InnerException);
+                log.Error("Incom: " + System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.ToString() + ex.InnerException);
             }
         }
 
         public void Create()
-		{
+        {
             // IDictionary<string, object> contextDictionary = Context as IDictionary<string, object>;
             // HelperToolbarFramework.SetButtonStyle(contextDictionary, Model);
-          //  Model.MyCollection = collection;
-          //  Model.btnCreateState = btn_cr_state;
+            //  Model.MyCollection = collection;
+            //  Model.btnCreateState = btn_cr_state;
         }
-		/// <summary>
-		/// Destroys this instance.
-		/// </summary>
-		public void Destroy()
-		{ log.Info("Incom: IncomView is normaly destroyed");
+        /// <summary>
+        /// Destroys this instance.
+        /// </summary>
+        public void Destroy()
+        { log.Info("Incom: IncomView is normaly destroyed");
             try
             {
                 if (BiometryTimerAuth.IsEnabled)
@@ -236,19 +239,19 @@ namespace Genesyslab.Desktop.Modules.Incom.IncomUI
             catch (Exception ex)
             {
 
-                log.Error("Incom: "+System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.ToString() + ex.InnerException);
+                log.Error("Incom: " + System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.ToString() + ex.InnerException);
             }
 
 
         }
-		#region INotifyPropertyChanged Members
+        #region INotifyPropertyChanged Members
 
-		public event PropertyChangedEventHandler PropertyChanged;
-		protected void OnPropertyChanged(string name)
-		{
-			if (PropertyChanged != null)
-			{
-				PropertyChanged(this, new PropertyChangedEventArgs(name));
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected void OnPropertyChanged(string name)
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(name));
             }
         }
         #endregion
@@ -257,6 +260,9 @@ namespace Genesyslab.Desktop.Modules.Incom.IncomUI
         {
             EventEstablishedListener(userEvent);
         }
+
+        
+        
 
         void IIncomView.EventReleasedListner(IMessage userEvent)
         {
@@ -280,9 +286,13 @@ namespace Genesyslab.Desktop.Modules.Incom.IncomUI
                     var callReponseCreate = biometry_callRecord_exec("RECORD", callUUID, channelType, ee.DNIS,"1");
                     if (callReponseCreate.errorInfo.code!=0)
                     {
-                        System.Threading.Thread.Sleep(2000);
-                        callReponseCreate = biometry_callRecord_exec("RECORD", callUUID, channelType, ee.DNIS, "1");
-                        iv.UserData.Add("callToken", callReponseCreate.businessInfo.callToken.ToString());
+                        while (callReponseCreate.errorInfo.code == 0)
+                        {
+                            System.Threading.Thread.Sleep(2000);
+                            callReponseCreate = biometry_callRecord_exec("RECORD", callUUID, channelType, ee.DNIS, "1");
+                            // iv.UserData.Add("callToken", callReponseCreate.businessInfo.callToken.ToString());
+                            incomView.SetCallToken(callReponseCreate.businessInfo.callToken.ToString());
+                        }
                     }
                     log.Debug("Incom: EventEstablishedListener: (CallUUID " + callUUID + " DNIS "+ee.DNIS);
                     iv.UserData.Add("callToken", callReponseCreate.businessInfo.callToken.ToString());
@@ -294,10 +304,13 @@ namespace Genesyslab.Desktop.Modules.Incom.IncomUI
                     log.Debug("Incom: EventEstablishedListener: server call type inbound || internal. Calltype: " + ee.CallType.ToString() + " ANI " + ee.ANI);
                    var callReponseCreate = biometry_callRecord_exec("RECORD", callUUID, channelType, ee.ANI, "0");
                     if (callReponseCreate.errorInfo.code != 0)
-                    {
-                        System.Threading.Thread.Sleep(2000);
-                        callReponseCreate = biometry_callRecord_exec("RECORD", callUUID, channelType, ee.DNIS, "0");
-                        iv.UserData.Add("callToken", callReponseCreate.businessInfo.callToken.ToString());
+                    {   
+                        while (callReponseCreate.errorInfo.code==0) 
+                        {
+                            System.Threading.Thread.Sleep(2000);
+                            callReponseCreate = biometry_callRecord_exec("RECORD", callUUID, channelType, ee.DNIS, "0");
+                            iv.UserData.Add("callToken", callReponseCreate.businessInfo.callToken.ToString());
+                        }
                     }
                     iv.UserData.Add("callToken",callReponseCreate.businessInfo.callToken.ToString());
                     parameters.Add("UserData", userData);

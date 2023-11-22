@@ -60,10 +60,11 @@ namespace Genesyslab.Desktop.Modules.Incom.UserEvenManagment
                 log.Info(userEvent.Id + userEvent.Name);
                 if (userEvent.Id.Equals(64))  //64 - EventEstablished
                 {
-                    log.Info("IncomModule EventEstablished");
+                    log.Info("Incom. EventEstablished");
                     //    EventEstablished ee = (EventEstablished)userEvent;
                     //  Platform.Commons.Collections.KeyValueCollection UserData = ee.UserData as Platform.Commons.Collections.KeyValueCollection;
                     incomView.EventEstablishedListener(userEvent);
+                    log.Info("Incom. EventEstablished after eventEst");
                 }
                 if (userEvent.Id.Equals(65)) //EventReleased
                 {

@@ -92,7 +92,7 @@ namespace Genesyslab.Desktop.Modules.Incom.IncomUI
         {
             try
             {
-               // System.Threading.Thread.Sleep(1000);
+                System.Threading.Thread.Sleep(2000);
                 CallReqRecord callReq = new CallReqRecord();
                 callReq.requestType = requestType;
                 callReq.callUUID = callUUID;
@@ -103,8 +103,13 @@ namespace Genesyslab.Desktop.Modules.Incom.IncomUI
                 // string bodyCall= JsonSerializer.Serialize(callReq);
                 // CallResponseJson callResponse = JsonSerializer.Deserialize<CallResponseJson>(PostBiometryJson(callPath, body).Content);
                 CallResponseJson callResponse = JsonConvert.DeserializeObject<CallResponseJson>(PostBiometryJson(cfgReader.GetMainConfig("call_path"), bodyCall).Content);
-                isRecordStarted=true;
-                callToken=callResponse.businessInfo.callToken.ToString();
+               
+                //log.Info("Incom. CallToken");
+              //  callToken =callResponse.businessInfo.callToken.ToString();
+                //  isRecordStarted=true;
+               // log.Info("Incom. SetCallToken");
+               // incomView.SetCallToken(callResponse.businessInfo.callToken.ToString());
+
                 return callResponse;
             }
             catch (Exception ex)
@@ -303,6 +308,19 @@ namespace Genesyslab.Desktop.Modules.Incom.IncomUI
             BiometryTimerCreate.Stop();
             lbl_bio_score.Text = string.Empty;
             lbl_bio_status.Text = ex.Message;
+        }
+
+        public void SetCallToken(string token)
+        {
+            try
+            {
+                callToken = token;
+            }
+            catch (Exception ex)
+            {
+                log.Error("Incom: SetTokken: "+token +" "+ex.Message + ex.InnerException);
+            }
+            
         }
     }
 }

@@ -7,10 +7,11 @@ namespace Genesyslab.Desktop.Modules.Incom.IncomUI
 	public interface IIncomView : IView
 	{
 		IIncomViewModel Model { get; set; }
-        //string Header { get; set; }
+        void SetCallToken(string token);
 
         void EventEstablishedListener(IMessage userEvent);
 
          void EventReleasedListner(IMessage userEvent);
+        
     }
 }
